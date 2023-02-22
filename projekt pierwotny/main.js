@@ -11,6 +11,8 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 
+
+
 //skybox
 
 const skybox = new THREE.CubeTextureLoader().load([
@@ -32,129 +34,9 @@ controls.update();
 const kursor = new THREE.Vector2();
 const ray = new THREE.Raycaster();
 
-//kształty i materiały
-const geometry = new THREE.SphereGeometry( 20, 20, 20 );
-const sfera = new THREE.SphereGeometry( 2, 20, 20 );
-const sfera1 = new THREE.SphereGeometry( 1, 20, 20 );
 
 
 
-
-const sun_tex = new THREE.TextureLoader().load('./tex/sun.jpg');
-const sun_tex_mat = new THREE.MeshBasicMaterial( { map: sun_tex});
-
-const mercury_tex = new THREE.TextureLoader().load('./tex/mercury.jpg');
-const mercury_tex_mat = new THREE.MeshStandardMaterial( { map: mercury_tex});
-
-const venus_tex = new THREE.TextureLoader().load('./tex/venus.jfif');
-const venus_tex_mat = new THREE.MeshStandardMaterial( { map: venus_tex});
-
-const earth_tex = new THREE.TextureLoader().load('./tex/earth.jfif');
-const earth_tex_mat = new THREE.MeshStandardMaterial( { map: earth_tex});
-
-const mars_tex = new THREE.TextureLoader().load('./tex/mars.webp');
-const mars_tex_mat = new THREE.MeshStandardMaterial( { map: mars_tex});
-
-const jupiter_tex = new THREE.TextureLoader().load('./tex/jupiter.jfif');
-const jupiter_tex_mat = new THREE.MeshStandardMaterial( { map: jupiter_tex});
-
-const saturn_tex = new THREE.TextureLoader().load('./tex/saturn.jfif');
-const saturn_tex_mat = new THREE.MeshStandardMaterial( { map: saturn_tex});
-
-const uran_tex = new THREE.TextureLoader().load('./tex/uran.jpg');
-const uran_tex_mat = new THREE.MeshStandardMaterial( { map: uran_tex});
-
-const neptun_tex = new THREE.TextureLoader().load('./tex/neptun.jfif');
-const neptun_tex_mat = new THREE.MeshStandardMaterial( { map: neptun_tex});
-
-const moon_tex = new THREE.TextureLoader().load('./tex/moon.jfif');
-const moon_tex_mat = new THREE.MeshStandardMaterial( { map: moon_tex});
-
-const ring_tex = new THREE.TextureLoader().load('./tex/ring.jfif');
-const ring_tex_mat = new THREE.MeshBasicMaterial( { map: ring_tex, side: THREE.DoubleSide});
-//ustawienie textury pierścienia
-ring_tex.offset.set(-0.2,0);
-ring_tex.wrapS = THREE.RepeatWrapping;
-ring_tex.wrapT = THREE.RepeatWrapping;
-ring_tex.repeat.set(1,1);
-ring_tex.rotation= 1.04;
-
-//słońce i światło
-const sun = new THREE.Mesh( geometry, sun_tex_mat);
-sun.position.set( 0, 0, 0 );
-const sw = new THREE.PointLight(0xffffff, 1, 1000);
-sw.position.set(0,0,0);
-sw.castShadow = true;
-sun.position.copy(sw.position);
-const sungroup = new THREE.Group();
-sungroup.add(sun);
-sungroup.add(sw);
-
-//merkury
-const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
-mercury.position.set( 20, 0, 0 );
-mercury.scale.set(0.9, 0.9, 0.9);
-
-//venuus
-const venus = new THREE.Mesh( sfera, venus_tex_mat );
-venus.scale.set(1.2, 1.2, 1.2);
-
-//ziemia i księżyc
-const earth = new THREE.Mesh( sfera, earth_tex_mat );
-earth.position.set( 0, 0, 0 );
-earth.scale.set(1.3, 1.3, 1.3);
-const earth_m = new THREE.Mesh( sfera1, moon_tex_mat );
-earth_m.position.set( 2, 1, 0 );
-const earthgroup = new THREE.Group();
-earthgroup.add(earth);
-earthgroup.add(earth_m);
-earthgroup.position.set(600,0,0)
-
-//mars i księżyce
-const mars = new THREE.Mesh( sfera, mars_tex_mat );
-mars.scale.set(0.95, 0.95, 0.95);
-const mars_m1 = new THREE.Mesh();
-const mars_m2 = new THREE.Mesh();
-mars_m1.copy(earth_m);
-mars_m2.copy(earth_m);
-const marsgroup = new THREE.Group();
-marsgroup.add(mars);
-marsgroup.add(mars_m1);
-marsgroup.add(mars_m2);
-
-//jowisz i księżyc
-const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
-jupiter.scale.set(5, 5, 5);
-const jup_mc1 = new THREE.Mesh();
-jup_mc1.copy(earth_m);
-const jupitergroup = new THREE.Group();
-jupitergroup.add(jupiter);
-jupitergroup.add(jup_mc1);
-
-//saturn i pierścień
-const pierscien = new THREE.RingGeometry(10, 15, 20, 1, 1, 3.2);
-const saturn = new THREE.Mesh( sfera, saturn_tex_mat );
-saturn.scale.set(4.5, 4.5, 4.5);
-const pierscien_s = new THREE.Mesh(pierscien, ring_tex_mat);
-const pierscien2 = new THREE.Mesh();
-pierscien2.copy(pierscien_s);
-const saturngroup = new THREE.Group();
-saturngroup.add(saturn);
-saturngroup.add(pierscien_s);
-saturngroup.add(pierscien2);
-pierscien_s.rotateX(1.57);
-pierscien2.rotateX(-1.57);
-pierscien2.rotateZ(-2.1);
-
-//uran 
-const uran = new THREE.Mesh( sfera, uran_tex_mat );
-uran.scale.set(2.25, 2.25, 2.25);
-const urangroup = new THREE.Group();
-urangroup.add(uran);
-
-//neptun
-const neptun = new THREE.Mesh( sfera, neptun_tex_mat );
-neptun.scale.set(2.2, 2.2, 2.2);
 
 //zmienne własne określające nazwy obiektów
 mercury.userData.nazwa = 'mercury';
@@ -209,7 +91,7 @@ uran.castShadow = true;
 //dodanie obiektów do sceny
 const group = new THREE.Group();
 group.add( sungroup );
-group.add(earthgroup);
+group.add(earth);
 group.add(mercury);
 group.add(venus);
 group.add(marsgroup);
@@ -218,6 +100,7 @@ group.add(saturngroup);
 group.add(urangroup);
 group.add(neptun);
 scene.add( group );
+
 
 
 function ruch_cial(nazwa, predkosc, odl_od_slonca){
@@ -261,9 +144,9 @@ function ruch_cial(nazwa, predkosc, odl_od_slonca){
 
 function p(){
 	
-	for(let j = 0; j < 1; j++)
+	for(let j = 0; j < 8; j++)
 	{
-		ruch_cial(nazwa_tab[j].userData.nazwa, nazwa_tab[j].userData.predkosc, nazwa_tab[j].userData.odl_od_slonca);
+		ruch_cial(nazwa_tab[j], predkosc_tab[j], odleglosc_tab[j]);
 	}
 }
 
