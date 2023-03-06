@@ -1,6 +1,6 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 5000 );
 camera.position.y = 320;
 camera.lookAt( scene.position );
 const renderer = new THREE.WebGLRenderer();
@@ -90,70 +90,39 @@ uran.castShadow = true;
 
 //dodanie obiektów do sceny
 const group = new THREE.Group();
-group.add( sungroup );
-group.add(earth);
-group.add(mercury);
-group.add(venus);
-group.add(marsgroup);
-group.add(jupitergroup);
-group.add(saturngroup);
-group.add(urangroup);
-group.add(neptun);
+group.add( sun_group );
+group.add( earth_group );
+group.add( mercury_group );
+group.add( venus_group );
+group.add( mars_group );
+group.add( jupiter_group );
+group.add( saturn_group );
+group.add( uran_group );
+group.add( neptun_group );
+
 scene.add( group );
 
 
 
-function ruch_cial(nazwa, predkosc, odl_od_slonca){
+function body_movement(name, speed, center_distance, group){
 	
-  nazwa.rotation.y += predkosc;
-  nazwa.position.set( odl_od_slonca*Math.cos(nazwa.rotation.y),0, odl_od_slonca*Math.sin(nazwa.rotation.y));
+  name.rotation.y += speed;
+  group.position.set( center_distance*Math.cos(name.rotation.y),0,center_distance*Math.sin(name.rotation.y));
 
-  // venus.rotation.y += v_venus;
-  // venus.position.set( d_venus*Math.sin(venus.rotation.y),0, d_venus*Math.cos(venus.rotation.y));
-
-  // earth.rotation.y += v_earth;
-  // earthgroup.position.set((d_earth*Math.cos(earth.rotation.y)),0, (d_earth*Math.sin(earth.rotation.y)));
-
-  // earth_m.rotation.y +=0.02;
-  // earth_m.position.set( 5*Math.cos(earth_m.rotation.y),0, 5*Math.sin(earth_m.rotation.y));
-
-  // mars.rotation.y += v_mars;
-  // marsgroup.position.set( d_mars*Math.cos(mars.rotation.y),0, d_mars*Math.sin(mars.rotation.y));
-
-  // mars_m1.rotation.y +=0.02;
-  // mars_m1.position.set( 5*Math.cos(mars_m1.rotation.y),0, 5*Math.sin(mars_m1.rotation.y));
-
-  // mars_m2.rotation.y +=0.02;
-  // mars_m2.position.set( -5*Math.cos(mars_m2.rotation.y),0, -5*Math.sin(mars_m2.rotation.y));
-  
-  // jupiter.rotation.y += v_jupiter;
-  // jupitergroup.position.set( d_jupiter*Math.cos(jupiter.rotation.y),0, d_jupiter*Math.sin(jupiter.rotation.y));
-
-  // jup_mc1.rotation.y +=0.02;
-  // jup_mc1.position.set( 12*Math.cos(jup_mc1.rotation.y),0, 12*Math.sin(jup_mc1.rotation.y));
-
-  // saturn.rotation.y += v_saturn;
-  // saturngroup.position.set( d_saturn*Math.cos(saturn.rotation.y),0, d_saturn*Math.sin(saturn.rotation.y));
-
-  // uran.rotation.y += v_uran;
-  // urangroup.position.set( d_uran*Math.cos(uran.rotation.y),0, d_uran*Math.sin(uran.rotation.y));
-
-  // neptun.rotation.y += v_neptun;
-  // neptun.position.set( d_neptun*Math.cos(neptun.rotation.y),0, d_neptun*Math.sin(neptun.rotation.y));
 }
 
-function p(){
+function point_all_objects(){
 	
 	for(let j = 0; j < 8; j++)
 	{
-		ruch_cial(nazwa_tab[j], predkosc_tab[j], odleglosc_tab[j]);
+		body_movement(name_tab[j], speed_tab[j], sun_distance_tab[j], group_tab[j]);
 	}
 }
 
 // funkcja zapewniająca animaccję układu
 function animate() {
   controls.update();
-  p();
+  point_all_objects();
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -169,6 +138,17 @@ window.addEventListener(
     switch ( e.key ) {
       case 'w':
 		break;
+		
+	  case 'l':
+			if ( ALight == false ) 
+			{
+				scene.add( ambientLight )
+				ALight = true
+				break;
+			}
+			ALight = false;
+			scene.remove( ambientLight );
+			break;
       default:
         ;
     }   
