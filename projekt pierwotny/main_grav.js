@@ -1,7 +1,7 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.y = 320;
+camera.position.y = 100;
 camera.lookAt( scene.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -33,7 +33,7 @@ const kursor = new THREE.Vector2();
 const ray = new THREE.Raycaster();
 
 //kształty i materiały
-const geometry = new THREE.SphereGeometry( 20, 20, 20 );
+const geometry = new THREE.SphereGeometry( 20, 80, 80 );
 const sfera = new THREE.SphereGeometry( 2, 20, 20 );
 const sfera1 = new THREE.SphereGeometry( 1, 20, 20 );
 
@@ -91,8 +91,9 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
+var odl_x = 100;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
-mercury.position.set( 20, 0, 0 );
+mercury.position.set( odl_x, 0, 0 );
 mercury.scale.set(0.9, 0.9, 0.9);
 
 //venuus
@@ -209,55 +210,21 @@ uran.castShadow = true;
 //dodanie obiektów do sceny
 const group = new THREE.Group();
 group.add( sungroup );
-group.add(earth);
-group.add(earth_m);
 group.add(mercury);
-group.add(venus);
-group.add(marsgroup);
-group.add(jupitergroup);
-group.add(saturngroup);
-group.add(urangroup);
-group.add(neptun);
-scene.add( group );
 
+scene.add( group );
+ var m_g = 0.01;
 
 function animate(){
 
   controls.update();
   
-
-  // venus.rotation.y += v_venus;
-  // venus.position.set( d_venus*Math.sin(venus.rotation.y),0, d_venus*Math.cos(venus.rotation.y));
-
-   earth.rotation.y += v_earth;
-   earth.position.set((d_earth*Math.cos(earth.rotation.y)),0, (d_earth*Math.sin(earth.rotation.y)));
-
-   earth_m.rotation.y +=0.02;
-   earth_m.position.set( 5*Math.cos(earth_m.rotation.y),0, 5*Math.sin(earth_m.rotation.y));
-
-  // mars.rotation.y += v_mars;
-  // marsgroup.position.set( d_mars*Math.cos(mars.rotation.y),0, d_mars*Math.sin(mars.rotation.y));
-
-  // mars_m1.rotation.y +=0.02;
-  // mars_m1.position.set( 5*Math.cos(mars_m1.rotation.y),0, 5*Math.sin(mars_m1.rotation.y));
-
-  // mars_m2.rotation.y +=0.02;
-  // mars_m2.position.set( -5*Math.cos(mars_m2.rotation.y),0, -5*Math.sin(mars_m2.rotation.y));
+  if(mercury.position.x > 21.85){
+  mercury.position.x -= m_g;
+  m_g += 0.001;
+  }
   
-  // jupiter.rotation.y += v_jupiter;
-  // jupitergroup.position.set( d_jupiter*Math.cos(jupiter.rotation.y),0, d_jupiter*Math.sin(jupiter.rotation.y));
 
-  // jup_mc1.rotation.y +=0.02;
-  // jup_mc1.position.set( 12*Math.cos(jup_mc1.rotation.y),0, 12*Math.sin(jup_mc1.rotation.y));
-
-  // saturn.rotation.y += v_saturn;
-  // saturngroup.position.set( d_saturn*Math.cos(saturn.rotation.y),0, d_saturn*Math.sin(saturn.rotation.y));
-
-  // uran.rotation.y += v_uran;
-  // urangroup.position.set( d_uran*Math.cos(uran.rotation.y),0, d_uran*Math.sin(uran.rotation.y));
-
-  // neptun.rotation.y += v_neptun;
-  // neptun.position.set( d_neptun*Math.cos(neptun.rotation.y),0, d_neptun*Math.sin(neptun.rotation.y));
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 	
@@ -284,6 +251,9 @@ window.addEventListener(
     switch ( e.key ) {
       case 'w':
 		break;
+    case 'r':
+      console.log(mercury.position.x);
+      break;
       default:
         ;
     }   
