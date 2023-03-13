@@ -7,10 +7,11 @@ function piloting_left()
 
 function piloting_right()
 {
-	Rocket.rotation.y += -0.01745329251994;
+	Rocket.rotation.y -= 0.01745329251994;
 }
 
 function piloting_acceleration()
 {
-	Rocket.position.set();
+	Rocket_velocity_x += Math.cos(Rocket.rotation.y) * 0.0005;
+	Rocket_velocity_z -= Math.sin(Rocket.rotation.y) * 0.0005;
 }

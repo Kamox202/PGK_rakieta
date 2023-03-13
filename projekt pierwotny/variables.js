@@ -47,8 +47,10 @@ ring_tex.rotation= 1.04;
 
 //Rocket
 const Rocket = new THREE.Mesh( rocket_geo, rocket_mat );
-Rocket.position.y = 20;
-var V
+Rocket.position.y = 11;
+var Rocket_velocity_x = 0;
+var Rocket_velocity_z = 0;
+
 
 //słońce i światło
 const sun = new THREE.Mesh( sfera, sun_tex_mat);

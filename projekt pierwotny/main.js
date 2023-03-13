@@ -109,10 +109,17 @@ function point_all_objects(){
 	}
 }
 
+function rocket_position(){
+	
+	Rocket.position.x += Rocket_velocity_x;
+	Rocket.position.z += Rocket_velocity_z;
+}
+
 // funkcja zapewniająca animaccję układu
 function animate() {
   controls.update();
   point_all_objects();
+  rocket_position();
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -135,6 +142,14 @@ window.addEventListener(
 		break;
 		
 	  case 'w':
+		piloting_up();
+		break;
+		
+	  case 's':
+		piloting_down();
+		break;
+		
+	  case ' ':
 		piloting_acceleration();
 		break;
 		
@@ -169,3 +184,6 @@ window.addEventListener(
   },
   false
 );
+
+const axe = new THREE.AxesHelper(50);
+scene.add( axe );
