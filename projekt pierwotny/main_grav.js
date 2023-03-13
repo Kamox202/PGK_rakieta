@@ -91,9 +91,10 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = 60;
+var odl_x = 70;
+var odl_z = -70;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
-mercury.position.set( odl_x, 0, -70 );
+mercury.position.set( odl_x, 0, odl_z);
 mercury.scale.set(0.9, 0.9, 0.9);
 
 //venuus
@@ -215,6 +216,7 @@ group.add(mercury);
 scene.add( group );
  var m_g = 0.01;
 
+
  function distance(o1, o2){
    var x1,y1, x2,y2;
    x1 = o1.position.x;
@@ -223,25 +225,50 @@ scene.add( group );
    y2 = o2.position.z;
 
    var dis = Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
-   console.log(dis);
+  
    return dis;
  }
 
  var momentum = 0;
+ 
  function exit(v){
    momentum = v;
   return momentum;
  }
+function faccing(o1, o2)
+{
+   
+  var face = Math.sin(o1.position.x);
+ // console.log(face);
+  return face;
 
+}
+
+function ang(o1)
+{
+  var ref_x = o1.position.x;
+  var ref_z = o1.position.z;
+  var aob = ref_x * 1;
+  var f = distance(sun, mercury)*(Math.pow(1,2));
+  var fin = (aob/f);
+  console.log(fin);
+  return fin;
+}
 
 function animate(){
 
   controls.update();
   mercury.position.z += 0.1;
+  mercury.rotation.y += 0.01;
   mercury.position.x -= momentum;
+  
 
   if(distance(sun, mercury) < 80){
-  mercury.position.x -= m_g;
+    if(ang(mercury) > 0){
+    mercury.position.x -= m_g;
+    }else{
+     mercury.position.z -= m_g;
+    }
   m_g += 0.0001;
   if(distance(sun, mercury) > 79){
     exit(m_g);
@@ -276,7 +303,7 @@ window.addEventListener(
       case 'w':
 		break;
     case 'r':
-      distance();
+      ang(mercury);
       break;
       default:
         ;
