@@ -91,8 +91,8 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = 70;
-var odl_z = -70;
+var odl_x = 50;
+var odl_z = 0;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
 mercury.position.set( odl_x, 0, odl_z);
 mercury.scale.set(0.9, 0.9, 0.9);
@@ -258,16 +258,16 @@ function ang(o1)
 function animate(){
 
   controls.update();
-  mercury.position.z += 0.1;
-  mercury.rotation.y += 0.01;
-  mercury.position.x -= momentum;
+  //mercury.position.z += 0.1;
+  //mercury.rotation.y += 0.01;
+  //mercury.position.x -= momentum;
   
 
   if(distance(sun, mercury) < 80){
     if(ang(mercury) > 0){
-    mercury.position.x -= m_g;
+   // mercury.position.x -= m_g;
     }else{
-     mercury.position.z -= m_g;
+    // mercury.position.z -= m_g;
     }
   m_g += 0.0001;
   if(distance(sun, mercury) > 79){
@@ -293,7 +293,7 @@ function animate(){
 
 
 animate();
-
+var fac = Math.cos(mercury.position.z);
 
 // obsługa klawiatury
 window.addEventListener(
@@ -304,6 +304,7 @@ window.addEventListener(
 		break;
     case 'r':
       ang(mercury);
+      console.log(fac);
       break;
       default:
         ;
