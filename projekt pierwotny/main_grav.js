@@ -1,5 +1,5 @@
 const scene = new THREE.Scene();
-scene.background = new THREE.Color( 0x0AC );
+//scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 camera.position.y = 100;
 camera.lookAt( scene.position );
@@ -91,7 +91,7 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = 50;
+var odl_x = -70;
 var odl_z = 0;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
 mercury.position.set( odl_x, 0, odl_z);
@@ -225,7 +225,7 @@ scene.add( group );
    y2 = o2.position.z;
 
    var dis = Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
-  
+
    return dis;
  }
 
@@ -255,25 +255,45 @@ function ang(o1)
   return fin;
 }
 
+function v_distance(o1, o2) {
+  const target = new THREE.Vector3(o1.position.x, o1.position.y, o1.position.z)
+  const grav_sorce = new THREE.Vector3(o2.position.x, o2.position.y, o2.position.z)
+  return target.distanceTo(grav_sorce);
+}
+
+const grav_constans;
+
+sun.userData.mass = 300;
+mercury.userData.mass = 1;
+
+function r_coordinates()
+{}
+
+function grav_force(o1,o2){
+  return -grav_constans*((o1.userData.mass*o1.userData.mass)/Math.pow(v_distance(o1, o2),3))
+}
+
 function animate(){
 
   controls.update();
-  //mercury.position.z += 0.1;
-  //mercury.rotation.y += 0.01;
+  mercury.rotation.y += 0.01;
+
+
+  mercury.position.z += 0.01;
+  
   //mercury.position.x -= momentum;
   
 
-  if(distance(sun, mercury) < 80){
-    if(ang(mercury) > 0){
-   // mercury.position.x -= m_g;
-    }else{
-    // mercury.position.z -= m_g;
-    }
-  m_g += 0.0001;
-  if(distance(sun, mercury) > 79){
-    exit(m_g);
-  }
-  }
+  // if(distance(sun, mercury) < 80){
+    
+  //   mercury.position.x -= m_g*(ang(mercury));
+  //   //mercury.position.z -= m_g*(ang(mercury));
+
+  // m_g += 0.001;
+  // if(distance(sun, mercury) > 79){
+  //   exit(m_g);
+  // }
+  // }
   
 
   requestAnimationFrame( animate );
@@ -293,7 +313,7 @@ function animate(){
 
 
 animate();
-var fac = Math.cos(mercury.position.z);
+
 
 // obsługa klawiatury
 window.addEventListener(
@@ -303,8 +323,9 @@ window.addEventListener(
       case 'w':
 		break;
     case 'r':
-      ang(mercury);
-      console.log(fac);
+      //ang(mercury);
+      console.log(v_distance(mercury, sun));
+      console.log(distance(sun, mercury));
       break;
       default:
         ;
