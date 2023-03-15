@@ -244,27 +244,45 @@ function v_distance(grav_victim, attractor) {
 }
 
 
-var momentum_x = 0, momentum_z = 0;
+
+
+
 
 function attraction(o1,o2,soi){
 var in_range = false;
+var v_x = (v_distance(o1,o2) <= soi) ? (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2) : 0;;
+var v_z = 0;
+var buffor_x = 0;
+var buffor_z = 0;
+
 if(v_distance(o1,o2)<= soi)
 {
   in_range = true;
-  var v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
-  var v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
-
+   v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
+   v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
   o1.position.x -= v_x;//przyciąganie na x
   o1.position.z -= v_z;//przyciąganie na z
-  momentum_x = v_x*1.1;//przyciąganie na x
-  momentum_z = v_z*1.1;//przyciąganie na z
+  
+  
 }
 
-
-  
-
-
+if(in_range == false && v_x !=0){
+  buffor_x = v_x;
+  buffor_z = v_z;
+  momentum_set(o1,buffor_x,buffor_z);
+  console.log(v_x);
+}
   return v_x, v_z;
+}
+
+function momentum_set(o1,v_x, v_z) {
+  
+  
+    
+  o1.position.x -= v_x;//przyciąganie na x
+  o1.position.z -= 0.01;//przyciąganie na z
+  
+ // console.log(v_x);
 }
 
 function crash_with_body(victim, body)
@@ -276,14 +294,12 @@ function crash_with_body(victim, body)
 }
 
 
-function momentum(trigger, v_x, v_z) {
-  if(trigger == true)
-  {
-    momentum_x = v_x;//przyciąganie na x
-    momentum_z = v_z;//przyciąganie na z
-  }
-}
 
+
+function apply_momentum(o1)
+{
+
+}
 
 function r_coordinates()
 {}
@@ -298,10 +314,9 @@ function animate(){
   controls.update();
   mercury.rotation.y += 0.01;
 
-  //mercury.position.z += 0.15546;
+  mercury.position.z -= 0.15546;
 
-  mercury.position.x -= momentum_x;
-  mercury.position.z -= momentum_z;
+  
  crash_with_body(mercury,sun);
   attraction(mercury,sun, 80);
 
