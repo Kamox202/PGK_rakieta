@@ -91,8 +91,8 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = -70;
-var odl_z = 0;
+var odl_x = 50;
+var odl_z = 50;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
 mercury.position.set( odl_x, 0, odl_z);
 mercury.scale.set(0.9, 0.9, 0.9);
@@ -229,42 +229,61 @@ scene.add( group );
    return dis;
  }
 
- var momentum = 0;
  
- function exit(v){
-   momentum = v;
-  return momentum;
- }
-function faccing(o1, o2)
+
+ 
+ const grav_constans = 2.5;
+
+ sun.userData.mass = 300;
+ mercury.userData.mass = 1;
+
+function v_distance(grav_victim, attractor) {
+  const target = new THREE.Vector3(grav_victim.position.x, grav_victim.position.y, grav_victim.position.z) //tworzy wektor dla ofiary grawitacji
+  const grav_sorce = new THREE.Vector3(attractor.position.x, attractor.position.y, attractor.position.z) //tworzy wektor dla źródła grawitacji
+  return target.distanceTo(grav_sorce);//oblicza odległość między obiektami
+}
+
+
+var momentum_x = 0, momentum_z = 0;
+
+function attraction(o1,o2,soi){
+var in_range = false;
+if(v_distance(o1,o2)<= soi)
 {
-   
-  var face = Math.sin(o1.position.x);
- // console.log(face);
-  return face;
+  in_range = true;
+  var v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
+  var v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
 
+  o1.position.x -= v_x;//przyciąganie na x
+  o1.position.z -= v_z;//przyciąganie na z
+  momentum_x = v_x*1.1;//przyciąganie na x
+  momentum_z = v_z*1.1;//przyciąganie na z
 }
 
-function ang(o1)
+
+  
+
+
+  return v_x, v_z;
+}
+
+function crash_with_body(victim, body)
 {
-  var ref_x = o1.position.x;
-  var ref_z = o1.position.z;
-  var aob = ref_x * 1;
-  var f = distance(sun, mercury)*(Math.pow(1,2));
-  var fin = (aob/f);
-  console.log(fin);
-  return fin;
+  if(v_distance(victim, body)< 22)
+  {
+    group.remove(victim);
+  }
 }
 
-function v_distance(o1, o2) {
-  const target = new THREE.Vector3(o1.position.x, o1.position.y, o1.position.z)
-  const grav_sorce = new THREE.Vector3(o2.position.x, o2.position.y, o2.position.z)
-  return target.distanceTo(grav_sorce);
+
+function momentum(trigger, v_x, v_z) {
+  if(trigger == true)
+  {
+    momentum_x = v_x;//przyciąganie na x
+    momentum_z = v_z;//przyciąganie na z
+  }
 }
 
-const grav_constans;
-
-sun.userData.mass = 300;
-mercury.userData.mass = 1;
 
 function r_coordinates()
 {}
@@ -273,28 +292,18 @@ function grav_force(o1,o2){
   return -grav_constans*((o1.userData.mass*o1.userData.mass)/Math.pow(v_distance(o1, o2),3))
 }
 
+
 function animate(){
 
   controls.update();
   mercury.rotation.y += 0.01;
 
+  //mercury.position.z += 0.15546;
 
-  mercury.position.z += 0.01;
-  
-  //mercury.position.x -= momentum;
-  
-
-  // if(distance(sun, mercury) < 80){
-    
-  //   mercury.position.x -= m_g*(ang(mercury));
-  //   //mercury.position.z -= m_g*(ang(mercury));
-
-  // m_g += 0.001;
-  // if(distance(sun, mercury) > 79){
-  //   exit(m_g);
-  // }
-  // }
-  
+  mercury.position.x -= momentum_x;
+  mercury.position.z -= momentum_z;
+ crash_with_body(mercury,sun);
+  attraction(mercury,sun, 80);
 
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -324,8 +333,8 @@ window.addEventListener(
 		break;
     case 'r':
       //ang(mercury);
-      console.log(v_distance(mercury, sun));
-      console.log(distance(sun, mercury));
+      //console.log(v_distance(mercury, sun));
+      console.log(attraction(mercury,sun, 80));
       break;
       default:
         ;
