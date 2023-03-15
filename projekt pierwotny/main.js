@@ -1,16 +1,15 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 5000 );
-camera.position.y = 320;
-camera.lookAt( scene.position );
+camera.position.y = Rocket.position.y + 0.2;
+	Rocket.add( camera );
+// camera.lookAt( Rocket.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( new THREE.Color( 0x000000 ) )
 document.getElementsByTagName('body')[0].appendChild( renderer.domElement );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-
 
 
 //skybox
@@ -120,6 +119,7 @@ function animate() {
   controls.update();
   point_all_objects();
   rocket_position();
+  camera.lookAt( Rocket_front.position );
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );

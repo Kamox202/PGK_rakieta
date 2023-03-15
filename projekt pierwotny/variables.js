@@ -2,8 +2,7 @@
 const sfera = new THREE.SphereGeometry( 1, 40, 40 );
 const ambientLight = new THREE.AmbientLight( 0xffffff ) ;
 	 var ALight = false;
-const rocket_geo = new THREE.BoxGeometry( 0.05, 0.01, 0.01);
-const rocket_mat = new THREE.MeshStandardMaterial;
+
 
 const sun_tex = new THREE.TextureLoader().load('./tex/sun.jpg');
 const sun_tex_mat = new THREE.MeshBasicMaterial( { map: sun_tex});
@@ -38,6 +37,10 @@ const moon_tex_mat = new THREE.MeshStandardMaterial( { map: moon_tex});
 const ring_tex = new THREE.TextureLoader().load('./tex/ring.jfif');
 const ring_tex_mat = new THREE.MeshBasicMaterial( { map: ring_tex, side: THREE.DoubleSide});
 
+const rocket_body_geo = new THREE.BoxGeometry( 0.5, 0.1, 0.1);
+const rocket_front_geo = new THREE.BoxGeometry( 0.1, 0.2, 0.2);
+const rocket_mat = new THREE.MeshStandardMaterial;
+
 //ustawienie textury pierścienia
 ring_tex.offset.set(-0.2,0);
 ring_tex.wrapS = THREE.RepeatWrapping;
@@ -46,8 +49,19 @@ ring_tex.repeat.set(1,1);
 ring_tex.rotation= 1.04;
 
 //Rocket
-const Rocket = new THREE.Mesh( rocket_geo, rocket_mat );
-Rocket.position.y = 11;
+const Rocket_front = new THREE.Mesh( rocket_front_geo, rocket_mat );
+const Rocket_body = new THREE.Mesh( rocket_body_geo, rocket_mat );
+
+Rocket_front.position.x = 0.3;
+
+const Rocket = new THREE.Group();
+	Rocket.add( Rocket_body );
+	Rocket.add( Rocket_front );
+
+	
+
+
+Rocket.position.y = 10;
 var Rocket_velocity_x = 0;
 var Rocket_velocity_z = 0;
 
@@ -141,7 +155,7 @@ var v_uran = 0.0006;
 var v_neptun = 0.0005;
 
 //zmienne odległości planet od słońca
-var d_earth = 30;
+var d_earth = 300;
 var d_mercury = d_earth * 0.38;
 var d_venus = d_earth * 0.72;
 var d_mars = d_earth * 1.5;
