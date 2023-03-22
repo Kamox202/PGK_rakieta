@@ -61,7 +61,7 @@ const Rocket = new THREE.Group();
 	
 
 
-Rocket.position.y = 10;
+Rocket.position.y = 11;
 var Rocket_velocity_x = 0;
 var Rocket_velocity_z = 0;
 
@@ -143,6 +143,13 @@ neptun.scale.set(2.2, 2.2, 2.2);
 const neptun_group = new THREE.Group();
 neptun_group.add(neptun);
 
+
+//zmienne kamery
+var cameraDistance = 1;
+var temp = new THREE.Vector3;
+var dir = new THREE.Vector3;
+var a = new THREE.Vector3;
+var b = new THREE.Vector3;
 
 //zmienne prędkości planet
 var v_mercury = 0.005;

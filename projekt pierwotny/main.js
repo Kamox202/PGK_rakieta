@@ -1,8 +1,9 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 5000 );
-camera.position.y = Rocket.position.y + 0.2;
-	Rocket.add( camera );
+camera.position.set ( 0, Rocket.position.y, 0);
+camera.lookAt( scene.position );
+
 // camera.lookAt( Rocket.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -76,6 +77,13 @@ jupiter.castShadow = true;
 saturn.castShadow = true;
 uran.castShadow = true;
 
+goal = new THREE.Object3D;
+follow = new THREE.Object3D;
+follow.position.z = -cameraDistance;
+Rocket.add( follow );
+goal.add( camera );
+
+
 //dodanie obiektów do sceny
 const group = new THREE.Group();
 group.add( sun_group );
@@ -119,7 +127,17 @@ function animate() {
   controls.update();
   point_all_objects();
   rocket_position();
-  camera.lookAt( Rocket_front.position );
+
+  a.lerp(Rocket.position, 0.4);
+  b.copy(goal.position);
+  
+  dir.copy( a ).sub( b ).normalize();
+  const dis = a.distanceTo( b ) - cameraDistance;
+  goal.position.addScaledVector( dir, dis );
+  goal.position.lerp(temp, 0.02);
+  temp.setFromMatrixPosition(follow.matrixWorld);
+
+  camera.lookAt( Rocket.position );
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -167,7 +185,7 @@ window.addEventListener(
       default:
         ;
     }   
-    camera.lookAt( scene.position );
+
     renderer.render( scene, camera );
   },
   false
