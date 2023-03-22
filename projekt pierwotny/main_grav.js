@@ -215,7 +215,7 @@ const group = new THREE.Group();
 group.add( sungroup );
 group.add(mercury);
 //group.add(venus);
-group.add(jupiter);
+//group.add(jupiter);
 
 scene.add( group );
  var m_g = 0.01;
@@ -236,8 +236,9 @@ scene.add( group );
  
 
  
- const grav_constans = 0.00;
-  sun.userData.mass = 300;
+ const grav_constans = 7;
+  sun.userData.mass = 600;
+  jupiter.userData.mass = 3000;
   mercury.userData.mass = 1;
 
 function v_distance(grav_victim, attractor) {
@@ -248,18 +249,31 @@ function v_distance(grav_victim, attractor) {
 
 function attraction(o1,o2,soi){
 var in_range = false;
-var v_x = (v_distance(o1,o2) <= soi) ? (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2) : 0;;
+var v_x = 0;
 var v_z = 0;
 var buffor_x = 0;
 var buffor_z = 0;
 
 if(v_distance(o1,o2)<= soi)
 {
+var orx = 1;
+var orz = 1;
+
+  if(o2.position.x > 0)
+  {
+    orx = 1;
+  }
+
+  if(o2.position.z > 0)
+  {
+    orz = 1;
+  }
+
   in_range = true;
    v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
    v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
-  o1.position.x -= v_x;//przyciąganie na x
-  o1.position.z -= v_z;//przyciąganie na z
+  o1.position.x -= v_x*orx;//przyciąganie na x
+  o1.position.z -= v_z*orz;//przyciąganie na z
   
   
 }
@@ -283,6 +297,8 @@ function momentum_set(o1,v_x, v_z) {
  // console.log(v_x);
 }
 
+
+
 function crash_with_sun(victim, body)
 {
   if(v_distance(victim, body)< 22)
@@ -290,18 +306,23 @@ function crash_with_sun(victim, body)
     group.remove(victim);
   }
 }
-
-
-
 function crash_with_body(victim, body)
 {
-  if(v_distance(victim, body)< 2*body.scale.x )
+  if(v_distance(victim, body)< (2*body.scale.x)+(2*victim.scale.x) )
   {
     group.remove(victim);
   }
 }
 
-
+function Newton_Grav(Small_mass, Big_mass, soi ) {
+  if(v_distance(Small_mass, Big_mass) < soi);
+ var r= v_distance(Small_mass,Big_mass);
+ var sm = Small_mass.userData.mass;
+ var bm = Big_mass.userData.mass;
+ var force = -grav_constans*((bm*sm)/Math.pow(r,3));
+ Small_mass.position.x += force;
+ Small_mass.position.z += force;
+}
 
 
 function apply_momentum(o1)
@@ -322,12 +343,13 @@ function animate(){
   controls.update();
   mercury.rotation.y += 0.01;
 
-  //mercury.position.z -= 0.0000006;
+  mercury.position.z -= 0.06;
 
   
  crash_with_sun(mercury,sun);
- crash_with_body(mercury,jupiter);
-  attraction(mercury,sun, 80);
+ //crash_with_body(mercury,jupiter);
+ // attraction(mercury,sun, 80);
+  Newton_Grav(mercury,sun, 80);
 
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
