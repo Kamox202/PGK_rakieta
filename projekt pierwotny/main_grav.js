@@ -100,6 +100,7 @@ mercury.scale.set(0.9, 0.9, 0.9);
 //venuus
 const venus = new THREE.Mesh( sfera, venus_tex_mat );
 venus.scale.set(1.2, 1.2, 1.2);
+venus.position.set(40, 0, 0);
 
 //ziemia i księżyc
 const earth = new THREE.Mesh( sfera, earth_tex_mat );
@@ -127,6 +128,7 @@ marsgroup.add(mars_m2);
 //jowisz i księżyc
 const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
 jupiter.scale.set(5, 5, 5);
+jupiter.position.set(40, 0, 0);
 const jup_mc1 = new THREE.Mesh();
 jup_mc1.copy(earth_m);
 const jupitergroup = new THREE.Group();
@@ -212,6 +214,8 @@ uran.castShadow = true;
 const group = new THREE.Group();
 group.add( sungroup );
 group.add(mercury);
+//group.add(venus);
+group.add(jupiter);
 
 scene.add( group );
  var m_g = 0.01;
@@ -232,21 +236,15 @@ scene.add( group );
  
 
  
- const grav_constans = 2.5;
-
- sun.userData.mass = 300;
- mercury.userData.mass = 1;
+ const grav_constans = 0.00;
+  sun.userData.mass = 300;
+  mercury.userData.mass = 1;
 
 function v_distance(grav_victim, attractor) {
   const target = new THREE.Vector3(grav_victim.position.x, grav_victim.position.y, grav_victim.position.z) //tworzy wektor dla ofiary grawitacji
   const grav_sorce = new THREE.Vector3(attractor.position.x, attractor.position.y, attractor.position.z) //tworzy wektor dla źródła grawitacji
   return target.distanceTo(grav_sorce);//oblicza odległość między obiektami
 }
-
-
-
-
-
 
 function attraction(o1,o2,soi){
 var in_range = false;
@@ -285,9 +283,19 @@ function momentum_set(o1,v_x, v_z) {
  // console.log(v_x);
 }
 
-function crash_with_body(victim, body)
+function crash_with_sun(victim, body)
 {
   if(v_distance(victim, body)< 22)
+  {
+    group.remove(victim);
+  }
+}
+
+
+
+function crash_with_body(victim, body)
+{
+  if(v_distance(victim, body)< 2*body.scale.x )
   {
     group.remove(victim);
   }
@@ -314,10 +322,11 @@ function animate(){
   controls.update();
   mercury.rotation.y += 0.01;
 
-  mercury.position.z -= 0.15546;
+  //mercury.position.z -= 0.0000006;
 
   
- crash_with_body(mercury,sun);
+ crash_with_sun(mercury,sun);
+ crash_with_body(mercury,jupiter);
   attraction(mercury,sun, 80);
 
   requestAnimationFrame( animate );
@@ -337,7 +346,7 @@ function animate(){
 
 
 animate();
-
+var rozmiar = venus.getSize;
 
 // obsługa klawiatury
 window.addEventListener(
@@ -349,7 +358,8 @@ window.addEventListener(
     case 'r':
       //ang(mercury);
       //console.log(v_distance(mercury, sun));
-      console.log(attraction(mercury,sun, 80));
+      //console.log(attraction(mercury,sun, 80));
+      console.log(rozmiar);
       break;
       default:
         ;
