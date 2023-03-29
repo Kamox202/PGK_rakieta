@@ -91,8 +91,8 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = 50;
-var odl_z = 50;
+var odl_x = -27;
+var odl_z = 50.5;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
 mercury.position.set( odl_x, 0, odl_z);
 mercury.scale.set(0.9, 0.9, 0.9);
@@ -236,9 +236,9 @@ scene.add( group );
  
 
  
- const grav_constans = 7;
-  sun.userData.mass = 600;
-  jupiter.userData.mass = 3000;
+ const grav_constans = 0.11;
+  sun.userData.mass = 800;
+  jupiter.userData.mass = 5000;
   mercury.userData.mass = 1;
 
 function v_distance(grav_victim, attractor) {
@@ -314,14 +314,65 @@ function crash_with_body(victim, body)
   }
 }
 
+function obliczCalkę(f, a, b, n) {
+  var dx = (b - a) / n; 
+  var wynik = 0;
+
+  for (var i = 0; i < n; i++) {
+    var x = a + i * dx + dx / 2; 
+    wynik += f(x) * dx; 
+  }
+
+  return wynik;
+}
+
+
+
+
 function Newton_Grav(Small_mass, Big_mass, soi ) {
   if(v_distance(Small_mass, Big_mass) < soi);
  var r= v_distance(Small_mass,Big_mass);
  var sm = Small_mass.userData.mass;
  var bm = Big_mass.userData.mass;
- var force = -grav_constans*((bm*sm)/Math.pow(r,3));
- Small_mass.position.x += force;
- Small_mass.position.z += force;
+ 
+ var rx = Small_mass.position.x-Big_mass.position.x;
+ var rz = Small_mass.position.z-Big_mass.position.z;
+ var force_scalar = -grav_constans*((bm*sm)/Math.pow(r,3));
+ var fx = force_scalar*rx;
+ var fz = force_scalar*rz;
+ var Force = new THREE.Vector3(fx,0,fz);
+ 
+ 
+
+ Small_mass.position.x += Force.x;
+ Small_mass.position.z += Force.z;
+ 
+//  if(Small_mass.position.x > 0 && Small_mass.position.z < 0){
+//   Small_mass.position.x += Force.x;
+//   Small_mass.position.z += Force.z;
+// }
+
+// if(Small_mass.position.x > 0 && Small_mass.position.z > 0){
+//   Small_mass.position.x += Force.x;
+//   Small_mass.position.z += Force.z;
+//  }
+
+
+//  if(Small_mass.position.x < 0 && Small_mass.position.z < 0){
+//   Small_mass.position.x += Force.x;
+//   Small_mass.position.z += Force.z;
+//  }
+
+//  if(Small_mass.position.x < 0 && Small_mass.position.z > 0){
+//   Small_mass.position.x += Force.x;
+//   Small_mass.position.z += Force.z;
+//  }
+
+
+ console.log(fx);
+
+
+return Force;
 }
 
 
@@ -343,13 +394,17 @@ function animate(){
   controls.update();
   mercury.rotation.y += 0.01;
 
-  mercury.position.z -= 0.06;
+    mercury.position.z -= 0.0;
+   
+   
+    // mercury.position.set(obliczCalkę(obliczCalkę(Newton_Grav(mercury,sun, 80)/mercury.userData.mass,10,0,10), 10, 0, 10),0,0);
 
   
  crash_with_sun(mercury,sun);
- //crash_with_body(mercury,jupiter);
+ crash_with_body(mercury,jupiter);
  // attraction(mercury,sun, 80);
-  Newton_Grav(mercury,sun, 80);
+  //Newton_Grav(mercury,jupiter, 8000);
+  Newton_Grav(mercury,sun, 8000);
 
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
