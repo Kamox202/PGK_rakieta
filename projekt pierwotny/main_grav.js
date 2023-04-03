@@ -91,7 +91,7 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
-var odl_x = -27;
+var odl_x = 40;
 var odl_z = 50.5;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
 mercury.position.set( odl_x, 0, odl_z);
@@ -128,7 +128,7 @@ marsgroup.add(mars_m2);
 //jowisz i księżyc
 const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
 jupiter.scale.set(5, 5, 5);
-jupiter.position.set(40, 0, 0);
+jupiter.position.set(80, 0, 0);
 const jup_mc1 = new THREE.Mesh();
 jup_mc1.copy(earth_m);
 const jupitergroup = new THREE.Group();
@@ -215,7 +215,7 @@ const group = new THREE.Group();
 group.add( sungroup );
 group.add(mercury);
 //group.add(venus);
-//group.add(jupiter);
+group.add(jupiter);
 
 scene.add( group );
  var m_g = 0.01;
@@ -237,8 +237,8 @@ scene.add( group );
 
  
  const grav_constans = 0.11;
-  sun.userData.mass = 800;
-  jupiter.userData.mass = 5000;
+  sun.userData.mass = 1000;
+  jupiter.userData.mass = 800;
   mercury.userData.mass = 1;
 
 function v_distance(grav_victim, attractor) {
@@ -347,26 +347,6 @@ function Newton_Grav(Small_mass, Big_mass, soi ) {
  Small_mass.position.x += Force.x;
  Small_mass.position.z += Force.z;
  
-//  if(Small_mass.position.x > 0 && Small_mass.position.z < 0){
-//   Small_mass.position.x += Force.x;
-//   Small_mass.position.z += Force.z;
-// }
-
-// if(Small_mass.position.x > 0 && Small_mass.position.z > 0){
-//   Small_mass.position.x += Force.x;
-//   Small_mass.position.z += Force.z;
-//  }
-
-
-//  if(Small_mass.position.x < 0 && Small_mass.position.z < 0){
-//   Small_mass.position.x += Force.x;
-//   Small_mass.position.z += Force.z;
-//  }
-
-//  if(Small_mass.position.x < 0 && Small_mass.position.z > 0){
-//   Small_mass.position.x += Force.x;
-//   Small_mass.position.z += Force.z;
-//  }
 
 
  console.log(fx);
@@ -375,6 +355,15 @@ function Newton_Grav(Small_mass, Big_mass, soi ) {
 return Force;
 }
 
+
+
+function acceleration_on_time(sm,bm)
+{
+  
+  var a = Newton_Grav(sm, bm,8000)/sm.userData.mass;
+  var moment_time = 1/60;
+
+  }
 
 function apply_momentum(o1)
 {
@@ -403,7 +392,7 @@ function animate(){
  crash_with_sun(mercury,sun);
  crash_with_body(mercury,jupiter);
  // attraction(mercury,sun, 80);
-  //Newton_Grav(mercury,jupiter, 8000);
+  Newton_Grav(mercury,jupiter, 8000);
   Newton_Grav(mercury,sun, 8000);
 
   requestAnimationFrame( animate );
