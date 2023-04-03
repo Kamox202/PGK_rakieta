@@ -1,8 +1,8 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 5000 );
-camera.position.set ( 0, Rocket.position.y, 0);
-camera.lookAt( scene.position );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 150000000 );
+camera.position.set ( -0.5, Rocket.position.y + 0.5, 0);
+
 
 // camera.lookAt( Rocket.position );
 const renderer = new THREE.WebGLRenderer();
@@ -27,8 +27,8 @@ const skybox = new THREE.CubeTextureLoader().load([
 scene.background = skybox;
 
 //orbitcontrols
-const controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.update();
+ const controls = new THREE.OrbitControls( camera, renderer.domElement );
+ controls.update();
 
 //zmienne dla raycaster
 const kursor = new THREE.Vector2();
@@ -77,11 +77,16 @@ jupiter.castShadow = true;
 saturn.castShadow = true;
 uran.castShadow = true;
 
-goal = new THREE.Object3D;
-follow = new THREE.Object3D;
-follow.position.z = -cameraDistance;
-Rocket.add( follow );
-goal.add( camera );
+// goal = new THREE.Object3D;
+// follow = new THREE.Object3D;
+// follow.position.z = -cameraDistance;
+// Rocket.add( follow );
+const Rocket_group = new THREE.Group();
+Rocket_group.add( Rocket );
+Rocket_group.add( camera );
+
+Rocket_group.position.x = 2000;
+
 
 
 //dodanie obiektów do sceny
@@ -95,7 +100,8 @@ group.add( jupiter_group );
 group.add( saturn_group );
 group.add( uran_group );
 group.add( neptun_group );
-group.add( Rocket );
+group.add( Rocket_group );
+
 
 scene.add( group );
 
@@ -108,7 +114,7 @@ function body_movement(name, speed, center_distance){
 
 }
 
-function point_all_objects(){
+function point_out_objects(){
 	
 	for(let j = 0; j < 8; j++)
 	{
@@ -118,27 +124,29 @@ function point_all_objects(){
 
 function rocket_position(){
 	
-	Rocket.position.x += Rocket_velocity_x;
-	Rocket.position.z += Rocket_velocity_z;
+	Rocket_group.position.x += Rocket_velocity_x;
+	Rocket_group.position.z += Rocket_velocity_z;
 }
 
 // funkcja zapewniająca animaccję układu
 function animate() {
   controls.update();
-  point_all_objects();
+  point_out_objects();
   rocket_position();
 
-  a.lerp(Rocket.position, 0.4);
-  b.copy(goal.position);
+  // a.lerp(Rocket.position, cameraDistance);
+  // b.copy(goal.position);
   
-  dir.copy( a ).sub( b ).normalize();
-  const dis = a.distanceTo( b ) - cameraDistance;
-  goal.position.addScaledVector( dir, dis );
-  goal.position.lerp(temp, 0.02);
-  temp.setFromMatrixPosition(follow.matrixWorld);
+  // dir.copy( a ).sub( b ).normalize();
+  // const dis = a.distanceTo( b ) - cameraDistance;
+  // goal.position.addScaledVector( dir, dis );
+  // goal.position.lerp(temp, 0.02);
+  // temp.setFromMatrixPosition(follow.matrixWorld);
 
-  camera.lookAt( Rocket.position );
+  camera.lookAt( Rocket_group.position );
   
+
+
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
@@ -160,11 +168,13 @@ window.addEventListener(
 		break;
 		
 	  case 'w':
-		piloting_up();
+      Rocket_throttle += 0.0001;
+      console.log(Rocket_throttle);
 		break;
 		
 	  case 's':
-		piloting_down();
+      Rocket_throttle -= 0.0001;
+		  console.log(Rocket_throttle);
 		break;
 		
 	  case ' ':
@@ -203,5 +213,5 @@ window.addEventListener(
   false
 );
 
-const axe = new THREE.AxesHelper(50);
-scene.add( axe );
+const axes = new THREE.AxesHelper(500);
+scene.add( axes );

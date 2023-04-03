@@ -1,5 +1,5 @@
 //kształty i materiały
-const sfera = new THREE.SphereGeometry( 1, 40, 40 );
+const sfera = new THREE.SphereGeometry( 1, 12756, 50 );
 const ambientLight = new THREE.AmbientLight( 0xffffff ) ;
 	 var ALight = false;
 
@@ -37,8 +37,9 @@ const moon_tex_mat = new THREE.MeshStandardMaterial( { map: moon_tex});
 const ring_tex = new THREE.TextureLoader().load('./tex/ring.jfif');
 const ring_tex_mat = new THREE.MeshBasicMaterial( { map: ring_tex, side: THREE.DoubleSide});
 
-const rocket_body_geo = new THREE.BoxGeometry( 0.5, 0.1, 0.1);
-const rocket_front_geo = new THREE.BoxGeometry( 0.1, 0.2, 0.2);
+const rocket_body_geo = new THREE.CylinderGeometry( 0.01, 0.01, 0.05, 60);
+const rocket_front_geo = new THREE.ConeGeometry( 0.01, 0.015, 60, 1);
+const rocket_back_geo = new THREE.LatheGeometry( 30, 0, 6.283185307179586 );
 const rocket_mat = new THREE.MeshStandardMaterial;
 
 //ustawienie textury pierścienia
@@ -51,25 +52,28 @@ ring_tex.rotation= 1.04;
 //Rocket
 const Rocket_front = new THREE.Mesh( rocket_front_geo, rocket_mat );
 const Rocket_body = new THREE.Mesh( rocket_body_geo, rocket_mat );
+const Rocket_back = new THREE.Mesh( rocket_back_geo, rocket_mat );
 
-Rocket_front.position.x = 0.3;
+Rocket_front.position.y = 0.0325;
+Rocket_back.position.y = -0.0325;
 
 const Rocket = new THREE.Group();
 	Rocket.add( Rocket_body );
 	Rocket.add( Rocket_front );
+	Rocket.add( Rocket_back );
 
-	
+Rocket.rotation.z = -3.14/2;	
 
-
-Rocket.position.y = 11;
 var Rocket_velocity_x = 0;
 var Rocket_velocity_z = 0;
+
+var Rocket_throttle = 0;
 
 
 //słońce i światło
 const sun = new THREE.Mesh( sfera, sun_tex_mat);
 sun.position.set( 0, 0, 0 );
-sun.scale.set(10, 10, 10);
+sun.scale.set(109, 109, 109);
 const sw = new THREE.PointLight(0xffffff, 1, 5000);
 sw.position.set(0,0,0);
 sw.castShadow = true;
@@ -94,7 +98,8 @@ venus_group.add(venus);
 const earth = new THREE.Mesh( sfera, earth_tex_mat );
 earth.rotation.z = 0.35;
 const earth_m = new THREE.Mesh( sfera, moon_tex_mat );
-earth_m.position.set( 2, 1, 0 );
+earth_m.scale.set( 0.25, 0.25, 0.25 );
+earth_m.position.set( 100, 0, 0 );
 const earth_group = new THREE.Group();
 earth_group.add(earth);
 earth_group.add(earth_m);
@@ -109,7 +114,7 @@ mars_group.add(mars);
 
 //jowisz i księżyc
 const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
-jupiter.scale.set(5, 5, 5);
+jupiter.scale.set(11.2, 11.2, 11.2);
 const jupiter_group = new THREE.Group();
 jupiter_group.add(jupiter);
 
@@ -117,7 +122,7 @@ jupiter_group.add(jupiter);
 //saturn i pierścień
 const pierscien = new THREE.RingGeometry(10, 15, 20, 1, 1, 3.2);
 const saturn = new THREE.Mesh( sfera, saturn_tex_mat );
-saturn.scale.set(4.5, 4.5, 4.5);
+saturn.scale.set(9.4, 9.4, 9.4);
 const pierscien_s = new THREE.Mesh(pierscien, ring_tex_mat);
 const pierscien2 = new THREE.Mesh();
 pierscien2.copy(pierscien_s);
@@ -132,37 +137,37 @@ saturn_group.add(saturn);
 
 //uran 
 const uran = new THREE.Mesh( sfera, uran_tex_mat );
-uran.scale.set(2.25, 2.25, 2.25);
+uran.scale.set(4, 4, 4);
 const uran_group = new THREE.Group();
 uran_group.add(uran);
 
 
 //neptun
 const neptun = new THREE.Mesh( sfera, neptun_tex_mat );
-neptun.scale.set(2.2, 2.2, 2.2);
+neptun.scale.set(3.8, 3.8, 3.8);
 const neptun_group = new THREE.Group();
 neptun_group.add(neptun);
 
 
 //zmienne kamery
-var cameraDistance = 1;
+var cameraDistance = 0.1;
 var temp = new THREE.Vector3;
 var dir = new THREE.Vector3;
 var a = new THREE.Vector3;
 var b = new THREE.Vector3;
 
 //zmienne prędkości planet
-var v_mercury = 0.005;
-var v_venus = 0.004;
 var v_earth = 0.000003;
-var v_mars = 0.0025;
-var v_jupiter = 0.001;
-var v_saturn = 0.0008;
-var v_uran = 0.0006;
-var v_neptun = 0.0005;
+var v_mercury = v_earth * 1.67;
+var v_venus = v_earth * 1.34;
+var v_mars = v_earth * 0.83;
+var v_jupiter = v_earth * 0.33;
+var v_saturn = v_earth * 0.27;
+var v_uran = v_earth * 0.20;
+var v_neptun = v_earth * 0.17;
 
 //zmienne odległości planet od słońca
-var d_earth = 300;
+var d_earth = 149597887;
 var d_mercury = d_earth * 0.38;
 var d_venus = d_earth * 0.72;
 var d_mars = d_earth * 1.5;
