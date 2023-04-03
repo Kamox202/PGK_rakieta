@@ -1,0 +1,14 @@
+function crash_with_sun(victim, body)
+{
+  if(v_distance(victim, body)< 22)
+  {
+    group.remove(victim);
+  }
+}
+function crash_with_body(victim, body)
+{
+  if(v_distance(victim, body)< (2*body.scale.x)+(2*victim.scale.x) )
+  {
+    group.remove(victim);
+  }
+}
