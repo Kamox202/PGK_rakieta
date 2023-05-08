@@ -103,6 +103,7 @@ group.add( saturn_group );
 group.add( uran_group );
 group.add( neptun_group );
 group.add( Rocket_group );
+group.add( ambientLight )
 
 
 scene.add( group );
@@ -147,9 +148,9 @@ function animate() {
   rocket_position();
   crash_with_body(Rocket_group, sun);
   Newton_Grav(Rocket_group, sun, 14000000);
-  document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle;
-  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_velocity_x;
-  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_velocity_z;
+  document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
+  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_velocity_x.toFixed(2);
+  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_velocity_z.toFixed(2);
 
   // a.lerp(Rocket.position, cameraDistance);
   // b.copy(goal.position);
@@ -185,19 +186,44 @@ window.addEventListener(
 		break;
 		
 	  case 'w':
-      Rocket_throttle += 0.01;
-      console.log(Rocket_throttle);
+      if(Rocket_throttle < max_throttle)
+      {
+        Rocket_throttle += 0.01;
+		    console.log(Rocket_throttle);
+      }
 		break;
 		
 	  case 's':
-      Rocket_throttle -= 0.01;
-		  console.log(Rocket_throttle);
+      if(Rocket_throttle > 0)
+      {
+        Rocket_throttle -= 0.01;
+		    console.log(Rocket_throttle);
+      }
+      if(Rocket_throttle < 0)
+      {
+        Rocket_throttle = 0.0;
+		    console.log(Rocket_throttle);
+      }
+
 		break;
 		
 	  case ' ':
 		piloting_acceleration();
 		break;
 		
+    case 'z':
+      Rocket_throttle = max_throttle;
+      console.log(Rocket_throttle);
+		break;
+
+    case 'x':
+      Rocket_throttle = 0;
+      console.log(Rocket_throttle);
+		break;
+
+    case 'c':
+      camera.lookAt( sun.position );
+		break;
 		
 	  case 'l':
 			if ( ALight == false ) 
@@ -230,5 +256,5 @@ window.addEventListener(
   false
 );
 
-const axes = new THREE.AxesHelper(500);
+const axes = new THREE.AxesHelper(2000000);
 scene.add( axes );

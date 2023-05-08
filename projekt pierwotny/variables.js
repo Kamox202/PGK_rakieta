@@ -1,6 +1,6 @@
 //kształty i materiały
 const sfera = new THREE.SphereGeometry( 6378, 64, 50 );
-const ambientLight = new THREE.AmbientLight( 0xffffff ) ;
+const ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 ) ;
 	 var ALight = false;
 
 
@@ -70,6 +70,8 @@ var Rocket_velocity_z = 0;
 var Rocket_velocity_lr = 0;
 
 var Rocket_throttle = 0;
+
+var max_throttle = 1;
 
 
 
