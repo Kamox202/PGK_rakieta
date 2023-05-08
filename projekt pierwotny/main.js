@@ -7,7 +7,7 @@ camera.position.set ( -0.5, Rocket.position.y + 0.5, 0);
 // camera.lookAt( Rocket.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor( new THREE.Color( 0x000000 ) )
+renderer.setClearColor( new THREE.Color( 0x000000 ) );
 document.getElementsByTagName('body')[0].appendChild( renderer.domElement );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -85,7 +85,9 @@ const Rocket_group = new THREE.Group();
 Rocket_group.add( Rocket );
 Rocket_group.add( camera );
 
-Rocket_group.position.x = 2000;
+Rocket_group.userData.mass = 10;
+
+Rocket_group.position.x = 2000000;
 
 
 
@@ -124,8 +126,18 @@ function point_out_objects(){
 
 function rocket_position(){
 	
-	Rocket_group.position.x += Rocket_velocity_x;
-	Rocket_group.position.z += Rocket_velocity_z;
+  Rocket.rotation.y += 0.01745329251994 * Rocket_velocity_lr;
+  if(Rocket_velocity_lr > 0)
+  {
+    Rocket_velocity_lr -= 0.001;
+  }
+  else if(Rocket_velocity_lr < 0)
+  {
+    Rocket_velocity_lr += 0.001;
+  }
+
+	Rocket_group.position.x += Rocket_velocity_x; 
+	Rocket_group.position.z += Rocket_velocity_z; 
 }
 
 // funkcja zapewniająca animaccję układu
@@ -133,6 +145,11 @@ function animate() {
   controls.update();
   point_out_objects();
   rocket_position();
+  crash_with_body(Rocket_group, sun);
+  Newton_Grav(Rocket_group, sun, 14000000);
+  document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle;
+  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_velocity_x;
+  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_velocity_z;
 
   // a.lerp(Rocket.position, cameraDistance);
   // b.copy(goal.position);
@@ -168,12 +185,12 @@ window.addEventListener(
 		break;
 		
 	  case 'w':
-      Rocket_throttle += 0.0001;
+      Rocket_throttle += 0.01;
       console.log(Rocket_throttle);
 		break;
 		
 	  case 's':
-      Rocket_throttle -= 0.0001;
+      Rocket_throttle -= 0.01;
 		  console.log(Rocket_throttle);
 		break;
 		

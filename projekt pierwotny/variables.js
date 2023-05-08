@@ -1,5 +1,5 @@
 //kształty i materiały
-const sfera = new THREE.SphereGeometry( 1, 12756, 50 );
+const sfera = new THREE.SphereGeometry( 6378, 64, 50 );
 const ambientLight = new THREE.AmbientLight( 0xffffff ) ;
 	 var ALight = false;
 
@@ -63,18 +63,21 @@ const Rocket = new THREE.Group();
 	Rocket.add( Rocket_back );
 
 Rocket.rotation.z = -3.14/2;	
+Rocket.rotation.y = -3.14/2;
 
 var Rocket_velocity_x = 0;
 var Rocket_velocity_z = 0;
+var Rocket_velocity_lr = 0;
 
 var Rocket_throttle = 0;
+
 
 
 //słońce i światło
 const sun = new THREE.Mesh( sfera, sun_tex_mat);
 sun.position.set( 0, 0, 0 );
-sun.scale.set(109, 109, 109);
-const sw = new THREE.PointLight(0xffffff, 1, 5000);
+sun.scale.set(19, 19, 19);
+const sw = new THREE.PointLight(0xffffff, 1, 500000000);
 sw.position.set(0,0,0);
 sw.castShadow = true;
 sun.position.copy(sw.position);
@@ -186,3 +189,59 @@ const speed_tab = [v_mercury, v_venus, v_earth, v_mars, v_jupiter, v_saturn, v_u
 const sun_distance_tab = [d_mercury, d_venus, d_earth, d_mars, d_jupiter, d_saturn, d_uran, d_neptun];
 const name_tab = [mercury, venus, earth, mars, jupiter, saturn, uran, neptun];
 const group_tab = [mercury_group, venus_group, earth_group, mars_group, jupiter_group, saturn_group, uran_group, neptun_group];
+
+
+//Grawitacja
+const grav_constans =6.67430 * 0.00000000001;
+sun.userData.mass = 198910000000000000000;
+mercury.userData.mass = 10;
+venus.userData.mass = 50;
+earth.userData.mass = 100;
+jupiter.userData.mass = 800;
+
+
+
+function v_distance(grav_victim, attractor) {
+    const target = new THREE.Vector3(grav_victim.position.x, grav_victim.position.y, grav_victim.position.z) //tworzy wektor dla ofiary grawitacji
+    const grav_sorce = new THREE.Vector3(attractor.position.x, attractor.position.y, attractor.position.z) //tworzy wektor dla źródła grawitacji
+    return target.distanceTo(grav_sorce);//oblicza odległość między obiektami
+  }
+
+  function crash_with_sun(victim, body)
+{
+  if(v_distance(victim, body)< 22)
+  {
+    group.remove(victim);
+  }
+}
+
+function crash_with_body(victim, body)
+{
+  if(v_distance(victim, body) < (body.scale.x)+(victim.scale.x) )
+  {
+    group.remove(victim);
+  }
+}
+
+function Newton_Grav(Small_mass, Big_mass, soi ) {
+    if(v_distance(Small_mass, Big_mass) < soi);
+   var r= v_distance(Small_mass,Big_mass);
+   var sm = Small_mass.userData.mass;
+   var bm = Big_mass.userData.mass;
+   
+   var rx = Small_mass.position.x-Big_mass.position.x;
+   var rz = Small_mass.position.z-Big_mass.position.z;
+   var force_scalar = -grav_constans*((bm*sm)/Math.pow(r,3));
+   var fx = force_scalar*rx;
+   var fz = force_scalar*rz;
+   var Force = new THREE.Vector3(fx,0,fz);
+
+   Rocket_velocity_x += Force.x;
+   Rocket_velocity_z += Force.z;
+   
+   
+   console.log(force_scalar);
+  
+  return Force;
+  }
+  
