@@ -1,3 +1,13 @@
+// import * as THREE from "js/thre/src/build/three.module.js";
+// import { EffectComposer } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/EffectComposer.js";
+// import { RenderPass } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/RenderPass.js";
+// import { UnrealBloomPass } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/UnrealBloomPass.js";
+// import { AfterimagePass } from 'js/thre/src/examples/jsm/postprocessing/AfterimagePass.js';
+
+// import { OrbitControls } from 'js/thre/src/examples/jsm/controls/OrbitControls.js';
+
+
+
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
@@ -214,7 +224,7 @@ uran.castShadow = true;
 const group = new THREE.Group();
 group.add( sungroup );
 group.add(mercury);
-//group.add(venus);
+group.add(venus);
 group.add(jupiter);
 
 scene.add( group );
@@ -325,6 +335,11 @@ function obliczCalkę(f, a, b, n) {
 
   return wynik;
 }
+
+
+
+
+
 
 
 
