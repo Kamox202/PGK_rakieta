@@ -81,13 +81,17 @@ uran.castShadow = true;
 // follow = new THREE.Object3D;
 // follow.position.z = -cameraDistance;
 // Rocket.add( follow );
+
+const axes = new THREE.AxesHelper(200);
+
+
 const Rocket_group = new THREE.Group();
 Rocket_group.add( Rocket );
 Rocket_group.add( camera );
+Rocket_group.add( axes );
 
-Rocket_group.userData.mass = 10;
 
-Rocket_group.position.x = 2000000;
+Rocket_group.position.x = 200000;
 
 
 
@@ -110,22 +114,29 @@ scene.add( group );
 
 
 
-function body_movement(name, speed, center_distance){
+function body_movement(object){
 	
-  name.rotation.y += speed;
-  name.position.set( center_distance*Math.cos(name.rotation.y),0,center_distance*Math.sin(name.rotation.y));
+  var Force_ = Newton_Grav(object, sun);
+  crash_with_body(object, sun);
+
+  object.userData.velocity_x += Force_.x;
+  object.userData.velocity_z += Force_.z; 
+  console.log("Velocity_X: ", object.userData.velocity_x);
+  console.log("Force_X: ", Force_.x); 
+}
+
+function Grav(object)
+{
+  var Force_ = Newton_Grav(object, sun);
+  crash_with_body(object, sun);
+
+  object.userData.velocity_x += Force_.x;
+  object.userData.velocity_z += Force_.z; 
 
 }
 
-function point_out_objects(){
-	
-	for(let j = 0; j < 8; j++)
-	{
-		body_movement(name_tab[j], speed_tab[j], sun_distance_tab[j], group_tab[j]);
-	}
-}
-
-function rocket_position(){
+function rocket_position()
+{
 	
   Rocket.rotation.y += 0.01745329251994 * Rocket_velocity_lr;
   if(Rocket_velocity_lr > 0)
@@ -137,34 +148,32 @@ function rocket_position(){
     Rocket_velocity_lr += 0.001;
   }
 
-	Rocket_group.position.x += Rocket_velocity_x; 
-	Rocket_group.position.z += Rocket_velocity_z; 
+	Rocket_group.position.x += Rocket.userData.velocity_x; 
+	Rocket_group.position.z += Rocket.userData.velocity_z; 
+  
+  console.log("Pozycja: ",Rocket_group.position.x);
 }
+
 
 // funkcja zapewniająca animaccję układu
 function animate() {
+
   controls.update();
-  point_out_objects();
+
+  for(let j = 0; j < 1; j++)
+  {
+    body_movement(name_tab[j]);
+  }
+
   rocket_position();
-  crash_with_body(Rocket_group, sun);
-  Newton_Grav(Rocket_group, sun, 14000000);
+
   document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
-  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_velocity_x.toFixed(2);
-  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_velocity_z.toFixed(2);
+  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket.userData.velocity_x.toFixed(2);
+  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket.userData.velocity_z.toFixed(2);
 
-  // a.lerp(Rocket.position, cameraDistance);
-  // b.copy(goal.position);
   
-  // dir.copy( a ).sub( b ).normalize();
-  // const dis = a.distanceTo( b ) - cameraDistance;
-  // goal.position.addScaledVector( dir, dis );
-  // goal.position.lerp(temp, 0.02);
-  // temp.setFromMatrixPosition(follow.matrixWorld);
-
   camera.lookAt( Rocket_group.position );
   
-
-
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
@@ -238,7 +247,6 @@ window.addEventListener(
       default:
         ;
     }   
-
     renderer.render( scene, camera );
   },
   false
@@ -255,6 +263,3 @@ window.addEventListener(
   },
   false
 );
-
-const axes = new THREE.AxesHelper(2000000);
-scene.add( axes );

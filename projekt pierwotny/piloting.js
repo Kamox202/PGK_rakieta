@@ -12,6 +12,6 @@ function piloting_right()
 
 function piloting_acceleration()
 {
-	Rocket_velocity_x += Math.cos(Rocket.rotation.y) * Rocket_throttle;
-	Rocket_velocity_z += -Math.sin(Rocket.rotation.y) * Rocket_throttle;
+	Rocket.userData.velocity_x += Math.cos(Rocket.rotation.y) * Rocket_throttle;
+	Rocket.userData.velocity_z += -Math.sin(Rocket.rotation.y) * Rocket_throttle;
 }
