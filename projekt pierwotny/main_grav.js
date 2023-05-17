@@ -1,7 +1,17 @@
+// import * as THREE from "js/thre/src/build/three.module.js";
+// import { EffectComposer } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/EffectComposer.js";
+// import { RenderPass } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/RenderPass.js";
+// import { UnrealBloomPass } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/postprocessing/UnrealBloomPass.js";
+// import { AfterimagePass } from 'js/thre/src/examples/jsm/postprocessing/AfterimagePass.js';
+
+// import { OrbitControls } from 'js/thre/src/examples/jsm/controls/OrbitControls.js';
+
+
+
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.y = 320;
+camera.position.y = 100;
 camera.lookAt( scene.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -33,7 +43,7 @@ const kursor = new THREE.Vector2();
 const ray = new THREE.Raycaster();
 
 //kształty i materiały
-const geometry = new THREE.SphereGeometry( 20, 20, 20 );
+const geometry = new THREE.SphereGeometry( 20, 80, 80 );
 const sfera = new THREE.SphereGeometry( 2, 20, 20 );
 const sfera1 = new THREE.SphereGeometry( 1, 20, 20 );
 
@@ -91,13 +101,16 @@ sungroup.add(sun);
 sungroup.add(sw);
 
 //merkury
+var odl_x = -40;
+var odl_z = -50.5;
 const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
-mercury.position.set( 20, 0, 0 );
+mercury.position.set( odl_x, 0, odl_z);
 mercury.scale.set(0.9, 0.9, 0.9);
 
 //venuus
 const venus = new THREE.Mesh( sfera, venus_tex_mat );
 venus.scale.set(1.2, 1.2, 1.2);
+venus.position.set(40, 0, 0);
 
 //ziemia i księżyc
 const earth = new THREE.Mesh( sfera, earth_tex_mat );
@@ -125,6 +138,7 @@ marsgroup.add(mars_m2);
 //jowisz i księżyc
 const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
 jupiter.scale.set(5, 5, 5);
+jupiter.position.set(80, 0, 0);
 const jup_mc1 = new THREE.Mesh();
 jup_mc1.copy(earth_m);
 const jupitergroup = new THREE.Group();
@@ -209,57 +223,242 @@ uran.castShadow = true;
 //dodanie obiektów do sceny
 const group = new THREE.Group();
 group.add( sungroup );
-group.add(earth);
-group.add(earth_m);
 group.add(mercury);
 group.add(venus);
-group.add(marsgroup);
-group.add(jupitergroup);
-group.add(saturngroup);
-group.add(urangroup);
-group.add(neptun);
+group.add(jupiter);
+
 scene.add( group );
+ var m_g = 0.01;
+
+
+ const color = 0xFF00FF;
+const intensity = 100;
+const light = new THREE.AmbientLight(color, intensity);
+scene.add(light);
+
+ function distance(o1, o2){
+   var x1,y1, x2,y2;
+   x1 = o1.position.x;
+   y1 = o1.position.z;
+   x2 = o2.position.x;
+   y2 = o2.position.z;
+
+   var dis = Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
+
+   return dis;
+ }
+
+ 
+
+ 
+ const grav_constans = 0.11;
+  sun.userData.mass = 1000;
+  jupiter.userData.mass = 800;
+  mercury.userData.mass = 1;
+
+function v_distance(grav_victim, attractor) {
+  const target = new THREE.Vector3(grav_victim.position.x, grav_victim.position.y, grav_victim.position.z) //tworzy wektor dla ofiary grawitacji
+  const grav_sorce = new THREE.Vector3(attractor.position.x, attractor.position.y, attractor.position.z) //tworzy wektor dla źródła grawitacji
+  return target.distanceTo(grav_sorce);//oblicza odległość między obiektami
+}
+
+function attraction(o1,o2,soi){
+var in_range = false;
+var v_x = 0;
+var v_z = 0;
+var buffor_x = 0;
+var buffor_z = 0;
+
+if(v_distance(o1,o2)<= soi)
+{
+var orx = 1;
+var orz = 1;
+
+  if(o2.position.x > 0)
+  {
+    orx = 1;
+  }
+
+  if(o2.position.z > 0)
+  {
+    orz = 1;
+  }
+
+  in_range = true;
+   v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
+   v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
+  o1.position.x -= v_x*orx;//przyciąganie na x
+  o1.position.z -= v_z*orz;//przyciąganie na z
+  
+  
+}
+
+if(in_range == false && v_x !=0){
+  buffor_x = v_x;
+  buffor_z = v_z;
+  momentum_set(o1,buffor_x,buffor_z);
+  console.log(v_x);
+}
+  return v_x, v_z;
+}
+
+
+var trailHeadGeometry = [];
+trailHeadGeometry.push( 
+  new THREE.Vector3( 1.0, 1.0, 1.0 ), 
+  new THREE.Vector3( 1.0, 0.0, 1.0 ), 
+  new THREE.Vector3( 0.0, 0.0, 0.0 ) 
+);
+// create the trail renderer object
+var trail = new TrailRenderer( scene, false );
+
+// create material for the trail renderer
+var trailMaterial = TrailRenderer.createBaseMaterial();	
+
+// specify length of trail
+var trailLength = 150;
+
+// initialize the trail
+trail.initialize( trailMaterial, 3000, false, 0, trailHeadGeometry, mercury  );
+
+ trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+ 		trailMaterial.uniforms.tailColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+
+// activate the trail
+trail.activate();
+
+
+scene.add(trail);
+
+function momentum_set(o1,v_x, v_z) {
+  
+  
+    
+  o1.position.x -= v_x;//przyciąganie na x
+  o1.position.z -= 0.01;//przyciąganie na z
+  
+ // console.log(v_x);
+}
+
+
+
+function crash_with_sun(victim, body)
+{
+  if(v_distance(victim, body)< 22)
+  {
+    group.remove(victim);
+  }
+}
+function crash_with_body(victim, body)
+{
+  if(v_distance(victim, body)< (2*body.scale.x)+(2*victim.scale.x) )
+  {
+    group.remove(victim);
+  }
+}
+
+function obliczCalkę(f, a, b, n) {
+  var dx = (b - a) / n; 
+  var wynik = 0;
+
+  for (var i = 0; i < n; i++) {
+    var x = a + i * dx + dx / 2; 
+    wynik += f(x) * dx; 
+  }
+
+  return wynik;
+}
+
+
+
+
+
+
+
+
+
+function Newton_Grav(Small_mass, Big_mass, soi ) {
+  if(v_distance(Small_mass, Big_mass) < soi);
+ var r= v_distance(Small_mass,Big_mass);
+ var sm = Small_mass.userData.mass;
+ var bm = Big_mass.userData.mass;
+ 
+ var rx = Small_mass.position.x-Big_mass.position.x;
+ var rz = Small_mass.position.z-Big_mass.position.z;
+ var force_scalar = -grav_constans*((bm*sm)/Math.pow(r,3));
+ var fx = force_scalar*rx;
+ var fz = force_scalar*rz;
+ var Force = new THREE.Vector3(fx,0,fz);
+ 
+ 
+
+ Small_mass.position.x += Force.x;
+ Small_mass.position.z += Force.z;
+ 
+
+
+ console.log(fx);
+
+
+return Force;
+}
+
+
+
+function acceleration_on_time(sm,bm)
+{
+  
+  var a = Newton_Grav(sm, bm,8000)/sm.userData.mass;
+  var moment_time = 1/60;
+
+  }
+
+function apply_momentum(o1)
+{
+
+}
+
+function r_coordinates()
+{}
+
+function grav_force(o1,o2){
+  return -grav_constans*((o1.userData.mass*o1.userData.mass)/Math.pow(v_distance(o1, o2),3))
+}
+
+
+var lastTrailUpdateTime = performance.now();
+function Trail_update() {
+    var time = performance.now();
+    if ( time - lastTrailUpdateTime > 10 ) {
+        trail.advance();
+        lastTrailUpdateTime = time;
+    } else {
+        trail.updateHead();
+    }}
+
 
 
 function animate(){
 
   controls.update();
+ // mercury.rotation.y += 0.01;
+
+    mercury.position.z += 0.3;
+   
+   
+    // mercury.position.set(obliczCalkę(obliczCalkę(Newton_Grav(mercury,sun, 80)/mercury.userData.mass,10,0,10), 10, 0, 10),0,0);
+
   
+ crash_with_sun(mercury,sun);
+ crash_with_body(mercury,jupiter);
+ // attraction(mercury,sun, 80);
+  Newton_Grav(mercury,jupiter, 8000);
+  Newton_Grav(mercury,sun, 8000);
 
-  // venus.rotation.y += v_venus;
-  // venus.position.set( d_venus*Math.sin(venus.rotation.y),0, d_venus*Math.cos(venus.rotation.y));
-
-   earth.rotation.y += v_earth;
-   earth.position.set((d_earth*Math.cos(earth.rotation.y)),0, (d_earth*Math.sin(earth.rotation.y)));
-
-   earth_m.rotation.y +=0.02;
-   earth_m.position.set( 5*Math.cos(earth_m.rotation.y),0, 5*Math.sin(earth_m.rotation.y));
-
-  // mars.rotation.y += v_mars;
-  // marsgroup.position.set( d_mars*Math.cos(mars.rotation.y),0, d_mars*Math.sin(mars.rotation.y));
-
-  // mars_m1.rotation.y +=0.02;
-  // mars_m1.position.set( 5*Math.cos(mars_m1.rotation.y),0, 5*Math.sin(mars_m1.rotation.y));
-
-  // mars_m2.rotation.y +=0.02;
-  // mars_m2.position.set( -5*Math.cos(mars_m2.rotation.y),0, -5*Math.sin(mars_m2.rotation.y));
-  
-  // jupiter.rotation.y += v_jupiter;
-  // jupitergroup.position.set( d_jupiter*Math.cos(jupiter.rotation.y),0, d_jupiter*Math.sin(jupiter.rotation.y));
-
-  // jup_mc1.rotation.y +=0.02;
-  // jup_mc1.position.set( 12*Math.cos(jup_mc1.rotation.y),0, 12*Math.sin(jup_mc1.rotation.y));
-
-  // saturn.rotation.y += v_saturn;
-  // saturngroup.position.set( d_saturn*Math.cos(saturn.rotation.y),0, d_saturn*Math.sin(saturn.rotation.y));
-
-  // uran.rotation.y += v_uran;
-  // urangroup.position.set( d_uran*Math.cos(uran.rotation.y),0, d_uran*Math.sin(uran.rotation.y));
-
-  // neptun.rotation.y += v_neptun;
-  // neptun.position.set( d_neptun*Math.cos(neptun.rotation.y),0, d_neptun*Math.sin(neptun.rotation.y));
   requestAnimationFrame( animate );
+  trail.advance();
 	renderer.render( scene, camera );
+  
 	
 }
 
@@ -275,7 +474,7 @@ function animate(){
 
 
 animate();
-
+var rozmiar = venus.getSize;
 
 // obsługa klawiatury
 window.addEventListener(
@@ -284,6 +483,12 @@ window.addEventListener(
     switch ( e.key ) {
       case 'w':
 		break;
+    case 'r':
+      //ang(mercury);
+      //console.log(v_distance(mercury, sun));
+      //console.log(attraction(mercury,sun, 80));
+      console.log(rozmiar);
+      break;
       default:
         ;
     }   
