@@ -393,6 +393,32 @@ function grav_force(o1,o2){
 }
 
 
+var trailHeadGeometry = [];
+trailHeadGeometry.push( 
+  new THREE.Vector3( 1.0, 1.0, 1.0 ), 
+  new THREE.Vector3( 1.0, 0.0, 1.0 ), 
+  new THREE.Vector3( 0.0, 0.0, 0.0 ) 
+);
+// create the trail renderer object
+var trail = new TrailRenderer( scene, false );
+
+// create material for the trail renderer
+var trailMaterial = TrailRenderer.createBaseMaterial();	
+
+// specify length of trail
+var trailLength = 150;
+
+// initialize the trail
+trail.initialize( trailMaterial, 500, false, 0, trailHeadGeometry, mercury  );
+
+ trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+ 		trailMaterial.uniforms.tailColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+
+// activate the trail
+trail.activate();
+scene.add(trail);
+
+
 function animate(){
 
   controls.update();
@@ -409,7 +435,7 @@ function animate(){
  // attraction(mercury,sun, 80);
   Newton_Grav(mercury,jupiter, 8000);
   Newton_Grav(mercury,sun, 8000);
-
+  trail.advance();
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 	
@@ -424,6 +450,8 @@ function animate(){
 // }
 
 // funkcja zapewniająca animaccję układu
+
+
 
 
 animate();
