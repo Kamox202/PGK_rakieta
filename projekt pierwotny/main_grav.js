@@ -11,7 +11,7 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.y = 100;
+camera.position.y = 200;
 camera.lookAt( scene.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -110,11 +110,11 @@ mercury.scale.set(0.9, 0.9, 0.9);
 //venuus
 const venus = new THREE.Mesh( sfera, venus_tex_mat );
 venus.scale.set(1.2, 1.2, 1.2);
-venus.position.set(40, 0, 0);
+venus.position.set(80, 0, 0);
 
 //ziemia i księżyc
 const earth = new THREE.Mesh( sfera, earth_tex_mat );
-earth.position.set( 0, 0, 0 );
+earth.position.set( 120, 0, 0 );
 earth.scale.set(1.3, 1.3, 1.3);
 const earth_m = new THREE.Mesh( sfera1, moon_tex_mat );
 earth_m.position.set( 2, 1, 0 );
@@ -125,6 +125,7 @@ earthgroup.position.set(600,0,0)
 
 //mars i księżyce
 const mars = new THREE.Mesh( sfera, mars_tex_mat );
+mars.position.set( 160, 0, 0 );
 mars.scale.set(0.95, 0.95, 0.95);
 const mars_m1 = new THREE.Mesh();
 const mars_m2 = new THREE.Mesh();
@@ -138,7 +139,7 @@ marsgroup.add(mars_m2);
 //jowisz i księżyc
 const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
 jupiter.scale.set(5, 5, 5);
-jupiter.position.set(80, 0, 0);
+jupiter.position.set(200, 0, 0);
 const jup_mc1 = new THREE.Mesh();
 jup_mc1.copy(earth_m);
 const jupitergroup = new THREE.Group();
@@ -225,31 +226,37 @@ const group = new THREE.Group();
 group.add( sungroup );
 group.add(mercury);
 group.add(venus);
+group.add(earth);
+group.add(mars);
 group.add(jupiter);
 
 scene.add( group );
  var m_g = 0.01;
 
 
- function distance(o1, o2){
-   var x1,y1, x2,y2;
-   x1 = o1.position.x;
-   y1 = o1.position.z;
-   x2 = o2.position.x;
-   y2 = o2.position.z;
-
-   var dis = Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
-
-   return dis;
- }
-
  
-
- 
- const grav_constans = 0.11;
-  sun.userData.mass = 1000;
-  jupiter.userData.mass = 800;
+ const grav_constans = 0.033;
+  sun.userData.mass = 30;
+  
   mercury.userData.mass = 1;
+  mercury.userData.velocity_x = 0;
+  mercury.userData.velocity_z = 0;
+
+  venus.userData.mass = 5;
+  venus.userData.velocity_x = 0;
+  venus.userData.velocity_z = 0;
+
+  earth.userData.mass = 6;
+  earth.userData.velocity_x = 0;
+  earth.userData.velocity_z = 0;
+
+  mars.userData.mass = 4;
+  mars.userData.velocity_x = 0;
+  mars.userData.velocity_z = 0;
+
+  jupiter.userData.mass = 10;
+  jupiter.userData.velocity_x = 0;
+  jupiter.userData.velocity_z = 0;
 
 function v_distance(grav_victim, attractor) {
   const target = new THREE.Vector3(grav_victim.position.x, grav_victim.position.y, grav_victim.position.z) //tworzy wektor dla ofiary grawitacji
@@ -257,89 +264,23 @@ function v_distance(grav_victim, attractor) {
   return target.distanceTo(grav_sorce);//oblicza odległość między obiektami
 }
 
-function attraction(o1,o2,soi){
-var in_range = false;
-var v_x = 0;
-var v_z = 0;
-var buffor_x = 0;
-var buffor_z = 0;
 
-if(v_distance(o1,o2)<= soi)
-{
-var orx = 1;
-var orz = 1;
-
-  if(o2.position.x > 0)
-  {
-    orx = 1;
-  }
-
-  if(o2.position.z > 0)
-  {
-    orz = 1;
-  }
-
-  in_range = true;
-   v_x = (grav_constans*(o1.position.x/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na x
-   v_z = (grav_constans*(o1.position.z/v_distance(o1,o2)))/v_distance(o1,o2);//zmienna przyciągania na z
-  o1.position.x -= v_x*orx;//przyciąganie na x
-  o1.position.z -= v_z*orz;//przyciąganie na z
-  
-  
-}
-
-if(in_range == false && v_x !=0){
-  buffor_x = v_x;
-  buffor_z = v_z;
-  momentum_set(o1,buffor_x,buffor_z);
-  console.log(v_x);
-}
-  return v_x, v_z;
-}
-
-function momentum_set(o1,v_x, v_z) {
-  
-  
-    
-  o1.position.x -= v_x;//przyciąganie na x
-  o1.position.z -= 0.01;//przyciąganie na z
-  
- // console.log(v_x);
-}
-
-
-
-function crash_with_sun(victim, body)
+function crash_with_sun(victim,victim_trail , body)
 {
   if(v_distance(victim, body)< 22)
   {
     group.remove(victim);
+    victim_trail.deactivate();
   }
 }
-function crash_with_body(victim, body)
+function crash_with_body(victim,victim_trail, body)
 {
-  if(v_distance(victim, body)< (2*body.scale.x)+(2*victim.scale.x) )
+  if(v_distance(victim, body)< (2*body.scale.x) )
   {
     group.remove(victim);
+   victim_trail.deactivate();
   }
 }
-
-function obliczCalkę(f, a, b, n) {
-  var dx = (b - a) / n; 
-  var wynik = 0;
-
-  for (var i = 0; i < n; i++) {
-    var x = a + i * dx + dx / 2; 
-    wynik += f(x) * dx; 
-  }
-
-  return wynik;
-}
-
-
-
-
-
 
 
 
@@ -357,10 +298,11 @@ function Newton_Grav(Small_mass, Big_mass, soi ) {
  var fz = force_scalar*rz;
  var Force = new THREE.Vector3(fx,0,fz);
  
- 
+Small_mass.userData.velocity_x += Force.x;
+Small_mass.userData.velocity_z += Force.z;
 
- Small_mass.position.x += Force.x;
- Small_mass.position.z += Force.z;
+ Small_mass.position.x += Small_mass.userData.velocity_x;
+ Small_mass.position.z += Small_mass.userData.velocity_z;
  
 
 
@@ -372,70 +314,118 @@ return Force;
 
 
 
-function acceleration_on_time(sm,bm)
-{
-  
-  var a = Newton_Grav(sm, bm,8000)/sm.userData.mass;
-  var moment_time = 1/60;
-
-  }
-
-function apply_momentum(o1)
-{
-
-}
-
-function r_coordinates()
-{}
-
-function grav_force(o1,o2){
-  return -grav_constans*((o1.userData.mass*o1.userData.mass)/Math.pow(v_distance(o1, o2),3))
-}
-
-
 var trailHeadGeometry = [];
 trailHeadGeometry.push( 
-  new THREE.Vector3( 1.0, 1.0, 1.0 ), 
-  new THREE.Vector3( 1.0, 0.0, 1.0 ), 
-  new THREE.Vector3( 0.0, 0.0, 0.0 ) 
+  new THREE.Vector3( -1.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 1.0, 0.0, 0.0 ), 
+  new THREE.Vector3( -1.0, 1.0, 0.0 ),
+  new THREE.Vector3( 1.0, -1.0, 0.0 )  
 );
 // create the trail renderer object
-var trail = new TrailRenderer( scene, false );
-
+var mercury_trail = new TrailRenderer( scene, false );
+var venus_trail = new TrailRenderer( scene, false );
+var earth_trail = new TrailRenderer( scene, false );
+var mars_trail = new TrailRenderer( scene, false );
+var jupiter_trail = new TrailRenderer( scene, false );
 // create material for the trail renderer
-var trailMaterial = TrailRenderer.createBaseMaterial();	
+var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
+var venus_trailMaterial = TrailRenderer.createBaseMaterial();	
+var earth_trailMaterial = TrailRenderer.createBaseMaterial();	
+var mars_trailMaterial = TrailRenderer.createBaseMaterial();
+var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
-var trailLength = 150;
+var trailLength = 2000;
 
 // initialize the trail
-trail.initialize( trailMaterial, 500, false, 0, trailHeadGeometry, mercury  );
+mercury_trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury  );
+venus_trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeometry, venus  );
+earth_trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth  );
+mars_trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars  );
+jupiter_trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter  );
 
- trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
- 		trailMaterial.uniforms.tailColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
+mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
+
+     venus_trailMaterial.uniforms.headColor.value.set( 0.9, 0.5, 0.3, 0.75 );
+ 		venus_trailMaterial.uniforms.tailColor.value.set( 0.4, 0.2, 0.01, 0.15 );
+
+     earth_trailMaterial.uniforms.headColor.value.set( 0.0, 0.6, 0.0, 0.75 );
+ 		earth_trailMaterial.uniforms.tailColor.value.set( 0.6, 0.6, 1.0, 0.15 );
+
+     mars_trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+ 		mars_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.2, 0.15 );
+
+     jupiter_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
+ 		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
 // activate the trail
-trail.activate();
-scene.add(trail);
+venus_trail.activate();
+scene.add(venus_trail);
 
+mercury_trail.activate();
+scene.add(mercury_trail);
+
+earth_trail.activate();
+scene.add(earth_trail);
+
+mars_trail.activate();
+scene.add(mars_trail);
+
+jupiter_trail.activate();
+scene.add(jupiter_trail);
 
 function animate(){
 
   controls.update();
-  mercury.rotation.y += 0.01;
+  // mercury.rotation.y += 0.01;
+  // venus.position.x -= 0.0;
+  //   venus.position.z -= 0.36;
+  //   mercury.position.z -= 0.12;
+  //   mercury.position.x += 0.06;
+   
+  //   jupiter.position.z -= 0.30;
+//  crash_with_sun(mercury,mercury_trail,sun);
+//  crash_with_body(mercury,mercury_trail,jupiter);
+//  crash_with_body(mercury,mercury_trail,venus);
 
-    mercury.position.z -= 0.0;
-   
-   
-    // mercury.position.set(obliczCalkę(obliczCalkę(Newton_Grav(mercury,sun, 80)/mercury.userData.mass,10,0,10), 10, 0, 10),0,0);
+//  crash_with_sun(venus,venus_trail,sun);
+//  crash_with_body(venus,venus_trail,jupiter);
+
+//  crash_with_sun(jupiter,jupiter_trail,sun);
+ 
+//   Newton_Grav(jupiter,sun, 800000);
+//   Newton_Grav(mercury,sun, 80000);
+//   Newton_Grav(venus,sun, 80000);
+//   Newton_Grav(mercury,venus, 800000);
+ 
+
+mercury.position.x -= 0.08;
+mercury.position.z += 0.08;
+venus.position.z -= 0.26;
+earth.position.z += 0.23;
+mars.position.z += 0.16;
+jupiter.position.z += 0.22;
 
   
- crash_with_sun(mercury,sun);
- crash_with_body(mercury,jupiter);
- // attraction(mercury,sun, 80);
-  Newton_Grav(mercury,jupiter, 8000);
-  Newton_Grav(mercury,sun, 8000);
-  trail.advance();
+   Newton_Grav(mercury,sun, 80000);
+   Newton_Grav(venus,sun, 80000);
+   Newton_Grav(earth,sun, 800000);
+   Newton_Grav(mars,sun, 800000);
+   Newton_Grav(jupiter,sun, 800000);
+ 
+ 
+ 
+   //  Newton_Grav(saturn,sun, 800000);
+  //  Newton_Grav(uran,sun, 800000);
+  //  Newton_Grav(neptun,sun, 800000);
+
+
+  mercury_trail.advance();
+  venus_trail.advance();
+  earth_trail.advance();
+  mars_trail.advance();
+  jupiter_trail.advance();
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 	
