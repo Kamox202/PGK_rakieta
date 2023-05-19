@@ -1,5 +1,5 @@
 //kształty i materiały
-const sfera = new THREE.SphereGeometry( 63780, 100, 100 );
+const sfera = new THREE.SphereGeometry( 63.78, 100, 100 );
 const ambientLight = new THREE.AmbientLight( 0xffffff, 0.8 ) ;
 	 var ALight = false;
 
@@ -25,15 +25,15 @@ const jupiter_tex_mat = new THREE.MeshStandardMaterial( { map: jupiter_tex});
 const moon_tex = new THREE.TextureLoader().load('./tex/moon.jfif');
 const moon_tex_mat = new THREE.MeshStandardMaterial( { map: moon_tex});
 
-const rocket_body_geo = new THREE.CylinderGeometry( 1, 1, 5, 60);
-const rocket_front_geo = new THREE.ConeGeometry( 1, 1.5, 60, 1);
+const rocket_body_geo = new THREE.CylinderGeometry( 0.001, 0.001, 0.005, 60);
+const rocket_front_geo = new THREE.ConeGeometry( 0.001, 0.0015, 60, 1);
 const rocket_back_geo = new THREE.LatheGeometry( 30, 0, 6.283185307179586 );
 const rocket_mat = new THREE.MeshStandardMaterial;
 const rocket_mat_red = new THREE.MeshStandardMaterial({color: 'red',});
 
 
 //zmienne odległości planet od słońca
-var d_earth = 10000000;
+var d_earth = 10000;
 var d_mercury = d_earth * 0.3;
 var d_venus = d_earth * 0.55;
 var d_mars = d_earth * 1.4;
@@ -43,7 +43,7 @@ var d_jupiter = d_earth * 2.3;
 const sun = new THREE.Mesh( sfera, sun_tex_mat);
 sun.position.set( 0, 0, 0 );
 sun.scale.set(15, 15, 15);
-const sw = new THREE.PointLight(0xffffff, 1, 50000000);
+const sw = new THREE.PointLight(0xffffff, 1, 50000);
 sw.position.set(0,0,0);
 sw.castShadow = true;
 sun.position.copy(sw.position);
@@ -97,8 +97,8 @@ const Rocket_front = new THREE.Mesh( rocket_front_geo, rocket_mat_red );
 const Rocket_body = new THREE.Mesh( rocket_body_geo, rocket_mat );
 const Rocket_back = new THREE.Mesh( rocket_back_geo, rocket_mat_red );
 
-Rocket_front.position.y = 3.25;
-Rocket_back.position.y = -3.25;
+Rocket_front.position.y = 0.00325;
+Rocket_back.position.y = -0.00325;
 
 const Rocket = new THREE.Group();
 	Rocket.add( Rocket_body );
@@ -120,7 +120,7 @@ var Rocket_velocity_lr = 0;
 var Rocket_throttle = 0;
 var max_throttle = 1;
 
-Rocket_group.position.x = 8000000;
+Rocket_group.position.x = 8000.000;
 
 
 //zmienne prędkości obrotu planet
@@ -131,21 +131,21 @@ mars_group.userData.rotation = 0.001;
 jupiter_group.userData.rotation = 0.001;
 
 //zmienne własne określające prędkość obiektów
-earth_group.userData.velocity = new THREE.Vector3(0, 0, 999);
-mercury_group.userData.velocity = new THREE.Vector3(0, 0, 980);
-venus_group.userData.velocity = new THREE.Vector3(0, 0, 1053);
-mars_group.userData.velocity = new THREE.Vector3(0, 0, 267);
-jupiter_group.userData.velocity = new THREE.Vector3(0, 0, 3607);
+earth_group.userData.velocity = new THREE.Vector3(0, 0, 1);
+mercury_group.userData.velocity = new THREE.Vector3(0, 0, 1);
+venus_group.userData.velocity = new THREE.Vector3(0, 0, 1);
+mars_group.userData.velocity = new THREE.Vector3(0, 0, 1);
+jupiter_group.userData.velocity = new THREE.Vector3(0, 0, 1);
 Rocket_group.userData.velocity = new THREE.Vector3(0, 0, 0);
 
 //Masa obiektów
 const grav_constans = 6.67430 * 0.00000000001;
-earth_group.userData.mass = 600000000;
-sun.userData.mass = earth_group.userData.mass * 415000;
+earth_group.userData.mass = 6000;
+sun.userData.mass = earth_group.userData.mass * 315000;
 mercury_group.userData.mass = earth_group.userData.mass * 0.5;
 venus_group.userData.mass = earth_group.userData.mass * 0.8;
 mars_group.userData.mass = earth_group.userData.mass * 0.1;
-jupiter_group.userData.mass = earth_group.userData.mass * 30;
+jupiter_group.userData.mass = earth_group.userData.mass * 320;
 Rocket_group.userData.mass = 10;
 
 //tablice

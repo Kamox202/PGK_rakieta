@@ -1,7 +1,7 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000000 );
-camera.position.set ( 100, Rocket.position.y + 100, 0);
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000 );
+camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
 
 
 // camera.lookAt( Rocket.position );
@@ -127,7 +127,7 @@ var mars_trailMaterial = TrailRenderer.createBaseMaterial();
 var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
-var trailLength = 200000;
+var trailLength = 20000;
 
 // initialize the trail
 mercury_trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
@@ -269,15 +269,17 @@ window.addEventListener(
 			ALight = false;
 			scene.remove( ambientLight );
 			break;
+            
     case '1':
-      camera.position.set ( 100, Rocket.position.y + 100, 0);
+      camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
 		break;
+            
     case '2':
-      camera.position.set ( 5000000, Rocket.position.y + 5000000, 0);
+      camera.position.set ( 5000, Rocket.position.y + 5000, 0);
 		break;
+            
       default:
         ;
-            camera.position.set ( 100, Rocket.position.y + 100, 0);
     }   
     renderer.render( scene, camera );
   },
