@@ -1,6 +1,6 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000 );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000000 );
 camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
 
 
@@ -108,17 +108,16 @@ function rocket_position()
 
 var trailHeadGeometry = [];
 trailHeadGeometry.push( 
-  new THREE.Vector3( -1.0, 0.0, 0.0 ), 
-  new THREE.Vector3( 1.0, 0.0, 0.0 ), 
-  new THREE.Vector3( -1.0, 1.0, 0.0 ),
-  new THREE.Vector3( 1.0, -1.0, 0.0 )  
+  new THREE.Vector3( -3000.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 3000.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 3000.0, 3000.0, 0.0 )     
 );
 // create the trail renderer object
-var mercury_trail = new TrailRenderer( scene, false );
-var venus_trail = new TrailRenderer( scene, false );
-var earth_trail = new TrailRenderer( scene, false );
-var mars_trail = new TrailRenderer( scene, false );
-var jupiter_trail = new TrailRenderer( scene, false );
+ mercury_group.userData.trail = new TrailRenderer( scene, false );
+ venus_group.userData.trail = new TrailRenderer( scene, false );
+ earth_group.userData.trail = new TrailRenderer( scene, false );
+ mars_group.userData.trail = new TrailRenderer( scene, false );
+ jupiter_group.userData.trail = new TrailRenderer( scene, false );
 // create material for the trail renderer
 var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
 var venus_trailMaterial = TrailRenderer.createBaseMaterial();	
@@ -130,11 +129,11 @@ var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
 var trailLength = 20000;
 
 // initialize the trail
-mercury_trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
-venus_trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeometry, venus_group  );
-earth_trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
-mars_trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
-jupiter_trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
+mercury_group.userData.trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
+venus_group.userData.trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeometry, venus_group  );
+earth_group.userData.trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
+mars_group.userData.trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
+jupiter_group.userData.trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
 
 mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
 mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
@@ -152,20 +151,20 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
  		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
 // activate the trail
-venus_trail.activate();
-scene.add(venus_trail);
+venus_group.userData.trail.activate();
+scene.add(venus_group.userData.trail);
 
-mercury_trail.activate();
-scene.add(mercury_trail);
+mercury_group.userData.trail.activate();
+scene.add(mercury_group.userData.trail);
 
-earth_trail.activate();
-scene.add(earth_trail);
+earth_group.userData.trail.activate();
+scene.add(earth_group.userData.trail);
 
-mars_trail.activate();
-scene.add(mars_trail);
+mars_group.userData.trail.activate();
+scene.add(mars_group.userData.trail);
 
-jupiter_trail.activate();
-scene.add(jupiter_trail);
+jupiter_group.userData.trail.activate();
+scene.add(jupiter_group.userData.trail);
 
 // funkcja zapewniająca animaccję układu
 function animate() {
@@ -193,11 +192,11 @@ function animate() {
 
   camera.lookAt( Rocket_group.position );
     
-  mercury_trail.advance();
-  venus_trail.advance();
-  earth_trail.advance();
-  mars_trail.advance();
-  jupiter_trail.advance();
+  mercury_group.userData.trail.advance();
+  venus_group.userData.trail.advance();
+  earth_group.userData.trail.advance();
+  mars_group.userData.trail.advance();
+  jupiter_group.userData.trail.advance();
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -275,7 +274,7 @@ window.addEventListener(
 		break;
             
     case '2':
-      camera.position.set ( 5000, Rocket.position.y + 5000, 0);
+      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
 		break;
             
       default:
