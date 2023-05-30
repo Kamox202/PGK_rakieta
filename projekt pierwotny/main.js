@@ -72,6 +72,7 @@ group.add( Rocket_group );
 group.add( ambientLight )
 
 
+
 scene.add( group );
 
 
@@ -153,31 +154,28 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
 
 // activate the trail
 venus_group.userData.trail.activate();
-scene.add(venus_group.userData.trail);
 
 mercury_group.userData.trail.activate();
-scene.add(mercury_group.userData.trail);
 
 earth_group.userData.trail.activate();
-scene.add(earth_group.userData.trail);
 
 mars_group.userData.trail.activate();
-scene.add(mars_group.userData.trail);
 
 jupiter_group.userData.trail.activate();
-scene.add(jupiter_group.userData.trail);
+;
 
 var cam_look = Rocket_group.position;
 
-var lastTrailUpdateTime = performance.now();
-function update(trail) {
-    var time = performance.now();
-    if ( time - lastTrailUpdateTime > 10 ) {
-        trail.advance();
-        lastTrailUpdateTime = time;
-    } else {
-        trail.updateHead();
-    }
+mercury_group.frustumCulled = false;
+mercury_group.userData.trail.frustumCulled = false;
+
+function update() {
+    
+  mercury_group.userData.trail.advance();
+  venus_group.userData.trail.advance();
+  earth_group.userData.trail.advance();
+  mars_group.userData.trail.advance();
+  jupiter_group.userData.trail.advance();
 }
 
 // funkcja zapewniająca animaccję układu
@@ -203,21 +201,22 @@ function animate() {
   document.getElementById("Mars_R").innerHTML = "Mars_R: " + v_distance(mars_group, sun).toFixed(2);
   document.getElementById("Jupiter_R").innerHTML = "Jupiter_R: " + v_distance(jupiter_group, sun).toFixed(2);
 
-
     
-  mercury_group.userData.trail.advance();
-  venus_group.userData.trail.advance();
-  earth_group.userData.trail.advance();
-  mars_group.userData.trail.advance();
-  jupiter_group.userData.trail.advance();
+    
+  jupiter_group.frustrumCulled = true;
 
-  update(mercury_group.userData.trail);
-
+  update();
+    
+    if(jupiter.isFrustumCulled)
+    {
+        console.log("nie jest na scenie");
+    };
 
   camera.lookAt( cam_look );
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
+    
 }
 
 animate();
@@ -240,7 +239,6 @@ window.addEventListener(
       if(Rocket_throttle < max_throttle)
       {
         Rocket_throttle += 0.01;
-		    console.log(Rocket_throttle);
       }
 		break;
 		
@@ -248,12 +246,10 @@ window.addEventListener(
       if(Rocket_throttle > 0)
       {
         Rocket_throttle -= 0.01;
-		    console.log(Rocket_throttle);
       }
       if(Rocket_throttle < 0)
       {
         Rocket_throttle = 0.0;
-		    console.log(Rocket_throttle);
       }
 
 		break;
@@ -264,12 +260,11 @@ window.addEventListener(
 		
     case 'z':
       Rocket_throttle = max_throttle;
-      console.log(Rocket_throttle);
 		break;
 
     case 'x':
       Rocket_throttle = 0;
-      console.log(Rocket_throttle);
+
 		break;
 
     case 'c':
@@ -313,6 +308,12 @@ window.addEventListener(
       camera.position.set ( 500000, Rocket.position.y + 500000, 0);
       jupiter_group.add( camera );
       cam_look = jupiter_group.position;
+		break;
+            
+    case '6':
+      camera.position.set ( 0, 50000000, 0);
+      sun_group.add( camera );
+      cam_look = sun_group.position;
 		break;
             
       default:

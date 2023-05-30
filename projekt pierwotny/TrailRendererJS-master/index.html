@@ -426,7 +426,7 @@
 
 		return function updateTrailTarget( time ) {
 
-			if ( time - lastTrailUpdateTime > 10 ) {
+			if ( time - lastTrailUpdateTime > 1  ) {
 
 				trail.advance();
 				lastTrailUpdateTime = time;
@@ -452,9 +452,9 @@
 
 			lastTargetPosition.copy( currentTargetPosition );
 
-			currentTargetPosition.x = Math.sin( scaledTime ) * areaScale;
-			currentTargetPosition.y = Math.sin( scaledTime * 1.1 ) * areaScale;
-			currentTargetPosition.z = Math.sin( scaledTime * 1.6 ) * areaScale;
+			currentTargetPosition.x = Math.sin( scaledTime ) * areaScale ;
+			currentTargetPosition.y = 0;
+			currentTargetPosition.z = Math.cos( scaledTime ) * areaScale ;
 
 			lastDirection.copy( currentDirection );
 
@@ -498,7 +498,7 @@
 	function initScene() {
 
 		scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera( 45, 1.0, 2, 2000 );
+		camera = new THREE.PerspectiveCamera( 45, 1.0, 2, 500 );
 		scene.add( camera );
 		resetCamera();
 
