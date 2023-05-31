@@ -90,6 +90,12 @@ const jupiter_group = new THREE.Group();
 jupiter_group.position.x = d_jupiter;
 jupiter_group.add(jupiter);
 
+//asteroida
+const asteroid = new THREE.Mesh( sfera, moon_tex_mat );
+asteroid.scale.set(1, 1, 1);
+const asteroid_group = new THREE.Group();
+asteroid_group.position.x = -d_mercury;
+asteroid_group.add(asteroid);
 
 //Rocket
 const Rocket_front = new THREE.Mesh( rocket_front_geo, rocket_mat_red );
@@ -128,6 +134,7 @@ mercury_group.userData.rotation = 0.001;
 venus_group.userData.rotation = 0.001;
 mars_group.userData.rotation = 0.001;
 jupiter_group.userData.rotation = 0.001;
+asteroid_group.userData.rotation = 0;
 
 //zmienne własne określające prędkość obiektów
 earth_group.userData.velocity = new THREE.Vector3(0, 0, 200);
@@ -135,6 +142,7 @@ mercury_group.userData.velocity = new THREE.Vector3(0, 0, 250);
 venus_group.userData.velocity = new THREE.Vector3(0, 0, 200);
 mars_group.userData.velocity = new THREE.Vector3(0, 0, 100);
 jupiter_group.userData.velocity = new THREE.Vector3(0, 0, 1000);
+asteroid_group.userData.velocity = new THREE.Vector3(40, 0, 10);
 Rocket_group.userData.velocity = new THREE.Vector3(0, 0, 0);
 
 //Masa obiektów
@@ -145,11 +153,12 @@ mercury_group.userData.mass = earth_group.userData.mass * 0.5;
 venus_group.userData.mass = earth_group.userData.mass * 0.8;
 mars_group.userData.mass = earth_group.userData.mass * 0.1;
 jupiter_group.userData.mass = earth_group.userData.mass * 80;
+asteroid_group.userData.mass = 10000000;
 Rocket_group.userData.mass = 10;
 
 //tablice
 
-const group_tab = [mercury_group, venus_group, earth_group, mars_group, jupiter_group];
+const group_tab = [mercury_group, venus_group, earth_group, mars_group, jupiter_group, asteroid_group];
 
 
 
@@ -165,7 +174,7 @@ function v_distance(grav_victim, attractor) {
 
 function crash_with_body(victim, body)
 {
-  if(v_distance(victim, body)< (2*body.scale.x) )
+  if(v_distance(victim, body) < (victim.scale.x + body.scale.x) )
   {
     group.remove(victim);
    victim.userData.trail.deactivate();

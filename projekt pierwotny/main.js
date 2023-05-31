@@ -68,6 +68,7 @@ group.add( mercury_group );
 group.add( venus_group );
 group.add( mars_group );
 group.add( jupiter_group );
+group.add(asteroid_group);
 group.add( Rocket_group );
 group.add( ambientLight )
 
@@ -83,6 +84,19 @@ function Gravitation(body)
 
   var Force_ = Newton_Grav(body, sun);
   crash_with_body(body, sun);
+
+  body.userData.velocity.x += Force_.x;
+  body.userData.velocity.z += Force_.z; 
+    
+  body.position.x += body.userData.velocity.x; 
+  body.position.z += body.userData.velocity.z;
+}
+
+function Gravitation_for_objects(body, planet)
+{
+
+  var Force_ = Newton_Grav(body, planet);
+  crash_with_body(body, planet);
 
   body.userData.velocity.x += Force_.x;
   body.userData.velocity.z += Force_.z; 
@@ -119,6 +133,7 @@ trailHeadGeometry.push(
  earth_group.userData.trail = new TrailRenderer( scene, false );
  mars_group.userData.trail = new TrailRenderer( scene, false );
  jupiter_group.userData.trail = new TrailRenderer( scene, false );
+ asteroid_group.userData.trail = new TrailRenderer( scene, false );
 
 // create material for the trail renderer
 var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
@@ -126,6 +141,7 @@ var venus_trailMaterial = TrailRenderer.createBaseMaterial();
 var earth_trailMaterial = TrailRenderer.createBaseMaterial();	
 var mars_trailMaterial = TrailRenderer.createBaseMaterial();
 var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
+var asteroid_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
 var trailLength = 20000;
@@ -136,6 +152,7 @@ venus_group.userData.trail.initialize( venus_trailMaterial, trailLength, false, 
 earth_group.userData.trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
 mars_group.userData.trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
 jupiter_group.userData.trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
+asteroid_group.userData.trail.initialize( asteroid_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, asteroid_group  );
 
 mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
 mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
@@ -152,6 +169,9 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
      jupiter_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
  		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
+     asteroid_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
+ 		asteroid_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
+
 // activate the trail
 venus_group.userData.trail.activate();
 
@@ -162,7 +182,8 @@ earth_group.userData.trail.activate();
 mars_group.userData.trail.activate();
 
 jupiter_group.userData.trail.activate();
-;
+
+asteroid_group.userData.trail.activate();
 
 var cam_look = Rocket_group.position;
 
@@ -176,17 +197,24 @@ function update() {
   earth_group.userData.trail.advance();
   mars_group.userData.trail.advance();
   jupiter_group.userData.trail.advance();
+  asteroid_group.userData.trail.advance();
 }
-
 // funkcja zapewniająca animaccję układu
 function animate() {
 
   controls.update();
 
-  for(let j = 0; j < 5; j++)
+  for(let j = 0; j < 6; j++)
   {
     Gravitation(group_tab[j]);
     group_tab[j].rotation.y += group_tab[j].userData.rotation;
+    if(j>4)
+    {
+      for(let i = 0; i < 5; i++)
+      {
+        Gravitation_for_objects(group_tab[j], group_tab[i]);
+      }
+    }
   }
 
   rocket_position();
@@ -206,6 +234,7 @@ function animate() {
   jupiter_group.frustrumCulled = true;
 
   update();
+  
     
     if(jupiter.isFrustumCulled)
     {
@@ -289,29 +318,37 @@ window.addEventListener(
 		break;
             
     case '2':
-      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
+      cam_look = mercury_group.position;
 		break;
 
     case '3':
-      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
-      mercury_group.add( camera );
-      cam_look = mercury_group.position;
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
+      cam_look = venus_group.position;
 		break;
             
     case '4':
-      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
-      earth_group.add( camera );
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
       cam_look = earth.position;
 		break;
 
     case '5':
-      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
-      jupiter_group.add( camera );
-      cam_look = jupiter_group.position;
+      camera.position.set ( mars_group, 0, mars_group );
+      sun_group.add( camera );
+      cam_look = mars_group.position;
 		break;
-            
+
     case '6':
       camera.position.set ( 0, 50000000, 0);
+      sun_group.add( camera );
+      cam_look = jupiter_group.position;
+		break;
+
+    case '7':
+      camera.position.set ( -1000000, 1000000, -800000);
       sun_group.add( camera );
       cam_look = sun_group.position;
 		break;
