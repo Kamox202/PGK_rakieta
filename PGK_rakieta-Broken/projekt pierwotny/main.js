@@ -1,7 +1,7 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000 );
-camera.position.set ( 0, 5000, 0);
+camera.position.set ( 0, 1000, 0);
 
 
 // camera.lookAt( Rocket.position );
@@ -117,20 +117,20 @@ function rocket_position()
     Rocket_velocity_lr += 0.001;
   }
 
-  //Gravitation(Rocket_group);
- // Gravitation_2(Rocket_group, mercury_group);
-  //Gravitation_2(Rocket_group, venus_group);
- // Gravitation_2(Rocket_group, earth);
- // Gravitation_2(Rocket_group, mars);
- Gravitation_2(Rocket_group, jupiter_group);
+  Gravitation(Rocket_group);
+  Gravitation_2(Rocket_group, mercury_group);
+  Gravitation_2(Rocket_group, venus_group);
+  Gravitation_2(Rocket_group, earth_group);
+  Gravitation_2(Rocket_group, mars_group);
+  Gravitation_2(Rocket_group, jupiter_group);
 }
 
 var trailHeadGeometry = [];
 trailHeadGeometry.push( 
-  new THREE.Vector3( 10.0, 0.0, 0.0 ), 
-  new THREE.Vector3( 10.0, 10.0, 0.0 ), 
-  new THREE.Vector3( -10.0, 10.0, 0.0 ),
-  new THREE.Vector3( -10.0, 0.0, 0.0 )  
+  new THREE.Vector3( 2.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 2.0, 2.0, 0.0 ), 
+  new THREE.Vector3( -2.0, 3.0, 0.0 ),
+  new THREE.Vector3( -2.0, 0.0, 0.0 )  
 );
 // create the trail renderer object
 var mercury_trail = new TrailRenderer( scene, false );
@@ -138,15 +138,17 @@ var venus_trail = new TrailRenderer( scene, false );
 var earth_trail = new TrailRenderer( scene, false );
 var mars_trail = new TrailRenderer( scene, false );
 var jupiter_trail = new TrailRenderer( scene, false );
+var Rocket_trail = new TrailRenderer( scene, false );
 // create material for the trail renderer
 var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
 var venus_trailMaterial = TrailRenderer.createBaseMaterial();	
 var earth_trailMaterial = TrailRenderer.createBaseMaterial();	
 var mars_trailMaterial = TrailRenderer.createBaseMaterial();
 var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
+var Rocket_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
-var trailLength = 20000;
+var trailLength = 200;
 
 // initialize the trail
 mercury_trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
@@ -154,6 +156,7 @@ venus_trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeo
 earth_trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
 mars_trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
 jupiter_trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
+Rocket_trail.initialize( Rocket_trailMaterial, trailLength, false, 0, trailHeadGeometry, Rocket_back  );
 
 mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
 mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
@@ -170,6 +173,9 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
      jupiter_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
  		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
+     Rocket_trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+ 		Rocket_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.2, 0.15 );
+
 // activate the trail
 venus_trail.activate();
 scene.add(venus_trail);
@@ -185,6 +191,9 @@ scene.add(mars_trail);
 
 jupiter_trail.activate();
 scene.add(jupiter_trail);
+
+Rocket_trail.activate();
+scene.add(Rocket_trail);
 
 // funkcja zapewniająca animaccję układu
 function animate() {
@@ -217,6 +226,7 @@ function animate() {
   earth_trail.advance();
   mars_trail.advance();
   jupiter_trail.advance();
+  Rocket_trail.advance();
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
@@ -270,7 +280,7 @@ window.addEventListener(
 		break;
 
     case 'x':
-      Rocket_throttle = 0;
+     // Rocket_throttle = 0;
       Rocket_group.userData.velocity.x = 0;
       Rocket_group.userData.velocity.z = 0;
       console.log(Rocket_throttle);
