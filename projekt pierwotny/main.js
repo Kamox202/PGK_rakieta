@@ -1,15 +1,22 @@
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.y = 320;
-camera.lookAt( scene.position );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000000 );
+camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
+
+
+// camera.lookAt( Rocket.position );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor( new THREE.Color( 0x000000 ) )
+renderer.setClearColor( new THREE.Color( 0x000000 ) );
 document.getElementsByTagName('body')[0].appendChild( renderer.domElement );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+const loader = new THREE.GLTFLoader();
+
+//loader.load('rocket_final.glb', (gltf) => {
+//   scene.add(gltf.scene)
+//})
 
 //skybox
 
@@ -25,136 +32,14 @@ const skybox = new THREE.CubeTextureLoader().load([
 scene.background = skybox;
 
 //orbitcontrols
-const controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.update();
+ const controls = new THREE.OrbitControls( camera, renderer.domElement );
+ controls.update();
 
 //zmienne dla raycaster
 const kursor = new THREE.Vector2();
 const ray = new THREE.Raycaster();
 
-//kształty i materiały
-const geometry = new THREE.SphereGeometry( 20, 20, 20 );
-const sfera = new THREE.SphereGeometry( 2, 20, 20 );
-const sfera1 = new THREE.SphereGeometry( 1, 20, 20 );
 
-
-
-
-const sun_tex = new THREE.TextureLoader().load('./tex/sun.jpg');
-const sun_tex_mat = new THREE.MeshBasicMaterial( { map: sun_tex});
-
-const mercury_tex = new THREE.TextureLoader().load('./tex/mercury.jpg');
-const mercury_tex_mat = new THREE.MeshStandardMaterial( { map: mercury_tex});
-
-const venus_tex = new THREE.TextureLoader().load('./tex/venus.jfif');
-const venus_tex_mat = new THREE.MeshStandardMaterial( { map: venus_tex});
-
-const earth_tex = new THREE.TextureLoader().load('./tex/earth.jfif');
-const earth_tex_mat = new THREE.MeshStandardMaterial( { map: earth_tex});
-
-const mars_tex = new THREE.TextureLoader().load('./tex/mars.webp');
-const mars_tex_mat = new THREE.MeshStandardMaterial( { map: mars_tex});
-
-const jupiter_tex = new THREE.TextureLoader().load('./tex/jupiter.jfif');
-const jupiter_tex_mat = new THREE.MeshStandardMaterial( { map: jupiter_tex});
-
-const saturn_tex = new THREE.TextureLoader().load('./tex/saturn.jfif');
-const saturn_tex_mat = new THREE.MeshStandardMaterial( { map: saturn_tex});
-
-const uran_tex = new THREE.TextureLoader().load('./tex/uran.jpg');
-const uran_tex_mat = new THREE.MeshStandardMaterial( { map: uran_tex});
-
-const neptun_tex = new THREE.TextureLoader().load('./tex/neptun.jfif');
-const neptun_tex_mat = new THREE.MeshStandardMaterial( { map: neptun_tex});
-
-const moon_tex = new THREE.TextureLoader().load('./tex/moon.jfif');
-const moon_tex_mat = new THREE.MeshStandardMaterial( { map: moon_tex});
-
-const ring_tex = new THREE.TextureLoader().load('./tex/ring.jfif');
-const ring_tex_mat = new THREE.MeshBasicMaterial( { map: ring_tex, side: THREE.DoubleSide});
-//ustawienie textury pierścienia
-ring_tex.offset.set(-0.2,0);
-ring_tex.wrapS = THREE.RepeatWrapping;
-ring_tex.wrapT = THREE.RepeatWrapping;
-ring_tex.repeat.set(1,1);
-ring_tex.rotation= 1.04;
-
-//słońce i światło
-const sun = new THREE.Mesh( geometry, sun_tex_mat);
-sun.position.set( 0, 0, 0 );
-const sw = new THREE.PointLight(0xffffff, 1, 1000);
-sw.position.set(0,0,0);
-sw.castShadow = true;
-sun.position.copy(sw.position);
-const sungroup = new THREE.Group();
-sungroup.add(sun);
-sungroup.add(sw);
-
-//merkury
-const mercury = new THREE.Mesh( sfera, mercury_tex_mat );
-mercury.position.set( 20, 0, 0 );
-mercury.scale.set(0.9, 0.9, 0.9);
-
-//venuus
-const venus = new THREE.Mesh( sfera, venus_tex_mat );
-venus.scale.set(1.2, 1.2, 1.2);
-
-//ziemia i księżyc
-const earth = new THREE.Mesh( sfera, earth_tex_mat );
-earth.position.set( 0, 0, 0 );
-earth.scale.set(1.3, 1.3, 1.3);
-const earth_m = new THREE.Mesh( sfera1, moon_tex_mat );
-earth_m.position.set( 2, 1, 0 );
-const earthgroup = new THREE.Group();
-earthgroup.add(earth);
-earthgroup.add(earth_m);
-earthgroup.position.set(600,0,0)
-
-//mars i księżyce
-const mars = new THREE.Mesh( sfera, mars_tex_mat );
-mars.scale.set(0.95, 0.95, 0.95);
-const mars_m1 = new THREE.Mesh();
-const mars_m2 = new THREE.Mesh();
-mars_m1.copy(earth_m);
-mars_m2.copy(earth_m);
-const marsgroup = new THREE.Group();
-marsgroup.add(mars);
-marsgroup.add(mars_m1);
-marsgroup.add(mars_m2);
-
-//jowisz i księżyc
-const jupiter = new THREE.Mesh( sfera, jupiter_tex_mat );
-jupiter.scale.set(5, 5, 5);
-const jup_mc1 = new THREE.Mesh();
-jup_mc1.copy(earth_m);
-const jupitergroup = new THREE.Group();
-jupitergroup.add(jupiter);
-jupitergroup.add(jup_mc1);
-
-//saturn i pierścień
-const pierscien = new THREE.RingGeometry(10, 15, 20, 1, 1, 3.2);
-const saturn = new THREE.Mesh( sfera, saturn_tex_mat );
-saturn.scale.set(4.5, 4.5, 4.5);
-const pierscien_s = new THREE.Mesh(pierscien, ring_tex_mat);
-const pierscien2 = new THREE.Mesh();
-pierscien2.copy(pierscien_s);
-const saturngroup = new THREE.Group();
-saturngroup.add(saturn);
-saturngroup.add(pierscien_s);
-saturngroup.add(pierscien2);
-pierscien_s.rotateX(1.57);
-pierscien2.rotateX(-1.57);
-pierscien2.rotateZ(-2.1);
-
-//uran 
-const uran = new THREE.Mesh( sfera, uran_tex_mat );
-uran.scale.set(2.25, 2.25, 2.25);
-const urangroup = new THREE.Group();
-urangroup.add(uran);
-
-//neptun
-const neptun = new THREE.Mesh( sfera, neptun_tex_mat );
-neptun.scale.set(2.2, 2.2, 2.2);
 
 //zmienne własne określające nazwy obiektów
 mercury.userData.nazwa = 'mercury';
@@ -162,19 +47,6 @@ venus.userData.nazwa = 'venus';
 earth.userData.nazwa = 'earth';
 mars.userData.nazwa = 'mars';
 jupiter.userData.nazwa = 'jupiter';
-saturn.userData.nazwa = 'saturn';
-uran.userData.nazwa = 'uran';
-neptun.userData.nazwa = 'neptun';
-
-mercury.userData.predkosc = 0.05;
-mercury.userData.odl_od_slonca = 35;
-
-sun.userData.nazwa = 'reset';
-earth_m.userData.nazwa = 'reset';
-mars_m1.userData.nazwa = 'reset';
-mars_m2.userData.nazwa = 'reset';
-jup_mc1.userData.nazwa = 'reset';
-pierscien_s.userData.nazwa = 'reset';
 
 //ustawienia cieni
 mercury.receiveShadow = true;
@@ -182,98 +54,205 @@ venus.receiveShadow = true;
 earth.receiveShadow = true;
 mars.receiveShadow = true;
 jupiter.receiveShadow = true;
-saturn.receiveShadow = true;
-uran.receiveShadow = true;
-neptun.receiveShadow = true;
-
-earth_m.receiveShadow = true;
-mars_m1.receiveShadow = true;
-mars_m2.receiveShadow = true;
-jup_mc1.receiveShadow = true;
-pierscien_s.receiveShadow = true;
-
-earth_m.castShadow = true;
-mars_m1.castShadow = true;
-mars_m2.castShadow = true;
-jup_mc1.castShadow = true;
-pierscien_s.castShadow = true;
 
 mercury.castShadow = true;
 venus.castShadow = true;
 earth.castShadow = true;
 mars.castShadow = true;
 jupiter.castShadow = true;
-saturn.castShadow = true;
-uran.castShadow = true;
+
+
+Rocket_group.add( camera );
+
 
 //dodanie obiektów do sceny
 const group = new THREE.Group();
-group.add( sungroup );
-group.add(earthgroup);
-group.add(mercury);
-group.add(venus);
-group.add(marsgroup);
-group.add(jupitergroup);
-group.add(saturngroup);
-group.add(urangroup);
-group.add(neptun);
+group.add( sun_group );
+group.add( earth_group );
+group.add( mercury_group );
+group.add( venus_group );
+group.add( mars_group );
+group.add( jupiter_group );
+group.add(asteroid_group);
+group.add( Rocket_group );
+group.add( ambientLight )
+
+
+
 scene.add( group );
 
 
-function ruch_cial(nazwa, predkosc, odl_od_slonca){
-	
-  nazwa.rotation.y += predkosc;
-  nazwa.position.set( odl_od_slonca*Math.cos(nazwa.rotation.y),0, odl_od_slonca*Math.sin(nazwa.rotation.y));
 
-  // venus.rotation.y += v_venus;
-  // venus.position.set( d_venus*Math.sin(venus.rotation.y),0, d_venus*Math.cos(venus.rotation.y));
 
-  // earth.rotation.y += v_earth;
-  // earthgroup.position.set((d_earth*Math.cos(earth.rotation.y)),0, (d_earth*Math.sin(earth.rotation.y)));
+function Gravitation(body)
+{
 
-  // earth_m.rotation.y +=0.02;
-  // earth_m.position.set( 5*Math.cos(earth_m.rotation.y),0, 5*Math.sin(earth_m.rotation.y));
+  var Force_ = Newton_Grav(body, sun);
+  crash_with_body(body, sun);
 
-  // mars.rotation.y += v_mars;
-  // marsgroup.position.set( d_mars*Math.cos(mars.rotation.y),0, d_mars*Math.sin(mars.rotation.y));
-
-  // mars_m1.rotation.y +=0.02;
-  // mars_m1.position.set( 5*Math.cos(mars_m1.rotation.y),0, 5*Math.sin(mars_m1.rotation.y));
-
-  // mars_m2.rotation.y +=0.02;
-  // mars_m2.position.set( -5*Math.cos(mars_m2.rotation.y),0, -5*Math.sin(mars_m2.rotation.y));
-  
-  // jupiter.rotation.y += v_jupiter;
-  // jupitergroup.position.set( d_jupiter*Math.cos(jupiter.rotation.y),0, d_jupiter*Math.sin(jupiter.rotation.y));
-
-  // jup_mc1.rotation.y +=0.02;
-  // jup_mc1.position.set( 12*Math.cos(jup_mc1.rotation.y),0, 12*Math.sin(jup_mc1.rotation.y));
-
-  // saturn.rotation.y += v_saturn;
-  // saturngroup.position.set( d_saturn*Math.cos(saturn.rotation.y),0, d_saturn*Math.sin(saturn.rotation.y));
-
-  // uran.rotation.y += v_uran;
-  // urangroup.position.set( d_uran*Math.cos(uran.rotation.y),0, d_uran*Math.sin(uran.rotation.y));
-
-  // neptun.rotation.y += v_neptun;
-  // neptun.position.set( d_neptun*Math.cos(neptun.rotation.y),0, d_neptun*Math.sin(neptun.rotation.y));
+  body.userData.velocity.x += Force_.x;
+  body.userData.velocity.z += Force_.z; 
+    
+  body.position.x += body.userData.velocity.x; 
+  body.position.z += body.userData.velocity.z;
 }
 
-function p(){
-	
-	for(let j = 0; j < 1; j++)
-	{
-		ruch_cial(nazwa_tab[j].userData.nazwa, nazwa_tab[j].userData.predkosc, nazwa_tab[j].userData.odl_od_slonca);
-	}
+function Gravitation_for_objects(body, planet)
+{
+
+  var Force_ = Newton_Grav(body, planet);
+  crash_with_body(body, planet);
+
+  body.userData.velocity.x += Force_.x;
+  body.userData.velocity.z += Force_.z; 
+    
+  body.position.x += body.userData.velocity.x; 
+  body.position.z += body.userData.velocity.z;
 }
+
+function rocket_position()
+{
+    
+  Rocket.rotation.y += 0.01745329251994 * Rocket_velocity_lr;
+  if(Rocket_velocity_lr > 0)
+  {
+    Rocket_velocity_lr -= 0.001;
+  }
+  else if(Rocket_velocity_lr < 0)
+  {
+    Rocket_velocity_lr += 0.001;
+  }
+
+  Gravitation(Rocket_group);
+}
+
+var trailHeadGeometry = [];
+trailHeadGeometry.push( 
+  new THREE.Vector3( -5000.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 5000.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 5000.0, 5000.0, 0.0 )     
+);
+// create the trail renderer object
+ mercury_group.userData.trail = new TrailRenderer( scene, false );
+ venus_group.userData.trail = new TrailRenderer( scene, false );
+ earth_group.userData.trail = new TrailRenderer( scene, false );
+ mars_group.userData.trail = new TrailRenderer( scene, false );
+ jupiter_group.userData.trail = new TrailRenderer( scene, false );
+ asteroid_group.userData.trail = new TrailRenderer( scene, false );
+
+// create material for the trail renderer
+var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
+var venus_trailMaterial = TrailRenderer.createBaseMaterial();	
+var earth_trailMaterial = TrailRenderer.createBaseMaterial();	
+var mars_trailMaterial = TrailRenderer.createBaseMaterial();
+var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
+var asteroid_trailMaterial = TrailRenderer.createBaseMaterial();
+
+// specify length of trail
+var trailLength = 20000;
+
+// initialize the trail
+mercury_group.userData.trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
+venus_group.userData.trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeometry, venus_group  );
+earth_group.userData.trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
+mars_group.userData.trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
+jupiter_group.userData.trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
+asteroid_group.userData.trail.initialize( asteroid_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, asteroid_group  );
+
+mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
+mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
+
+     venus_trailMaterial.uniforms.headColor.value.set( 0.9, 0.5, 0.3, 0.75 );
+ 		venus_trailMaterial.uniforms.tailColor.value.set( 0.4, 0.2, 0.01, 0.15 );
+
+     earth_trailMaterial.uniforms.headColor.value.set( 0.0, 0.6, 0.0, 0.75 );
+ 		earth_trailMaterial.uniforms.tailColor.value.set( 0.6, 0.6, 1.0, 0.15 );
+
+     mars_trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
+ 		mars_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.2, 0.15 );
+
+     jupiter_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
+ 		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
+
+     asteroid_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
+ 		asteroid_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
+
+// activate the trail
+venus_group.userData.trail.activate();
+
+mercury_group.userData.trail.activate();
+
+earth_group.userData.trail.activate();
+
+mars_group.userData.trail.activate();
+
+jupiter_group.userData.trail.activate();
+
+asteroid_group.userData.trail.activate();
+
+var cam_look = Rocket_group.position;
+
+mercury_group.frustumCulled = false;
+mercury_group.userData.trail.frustumCulled = false;
+
+function update() {
+    
+  mercury_group.userData.trail.advance();
+  venus_group.userData.trail.advance();
+  earth_group.userData.trail.advance();
+  mars_group.userData.trail.advance();
+  jupiter_group.userData.trail.advance();
+  asteroid_group.userData.trail.advance();
+}
+
 
 // funkcja zapewniająca animaccję układu
 function animate() {
+
   controls.update();
-  p();
+
+  for(let j = 0; j < 6; j++)
+  {
+    Gravitation(group_tab[j]);
+    group_tab[j].rotation.y += group_tab[j].userData.rotation;
+    if(j>4)
+    {
+      for(let i = 0; i < 5; i++)
+      {
+        Gravitation_for_objects(group_tab[j], group_tab[i]);
+      }
+    }
+  }
+
+  rocket_position();
+
+  document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
+  document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_group.userData.velocity.x.toFixed(2);
+  document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_group.userData.velocity.z.toFixed(2);
+    
+  document.getElementById("Mercury_R").innerHTML = "Mercury_R: " + v_distance(mercury_group, sun).toFixed(2);
+  document.getElementById("Venus_R").innerHTML = "Venus_R: " + v_distance(venus_group, sun).toFixed(2);
+  document.getElementById("Earth_R").innerHTML = "Earth_R: " + v_distance(earth_group, sun).toFixed(2);
+  document.getElementById("Mars_R").innerHTML = "Mars_R: " + v_distance(mars_group, sun).toFixed(2);
+  document.getElementById("Jupiter_R").innerHTML = "Jupiter_R: " + v_distance(jupiter_group, sun).toFixed(2);
+
+    
+    
+  jupiter_group.frustrumCulled = true;
+
+  update();
+  
+    
+    if(jupiter.isFrustumCulled)
+    {
+        console.log("nie jest na scenie");
+    };
+
+  camera.lookAt( cam_look );
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
+    
 }
 
 animate();
@@ -284,12 +263,106 @@ window.addEventListener(
   'keydown',
   function( e ) {
     switch ( e.key ) {
-      case 'w':
+      case 'a':
+		piloting_left();
 		break;
+		
+	  case 'd':
+		piloting_right();
+		break;
+		
+	  case 'w':
+      if(Rocket_throttle < max_throttle)
+      {
+        Rocket_throttle += 0.01;
+      }
+		break;
+		
+	  case 's':
+      if(Rocket_throttle > 0)
+      {
+        Rocket_throttle -= 0.01;
+      }
+      if(Rocket_throttle < 0)
+      {
+        Rocket_throttle = 0.0;
+      }
+
+		break;
+		
+	  case ' ':
+		piloting_acceleration();
+		break;
+		
+    case 'z':
+      Rocket_throttle = max_throttle;
+		break;
+
+    case 'x':
+      Rocket_throttle = 0;
+
+		break;
+
+    case 'c':
+      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
+      sun_group.add( camera );
+      cam_look = sun.position;
+		break;
+		
+	  case 'l':
+			if ( ALight == false ) 
+			{
+				scene.add( ambientLight )
+				ALight = true
+				break;
+			}
+			ALight = false;
+			scene.remove( ambientLight );
+			break;
+            
+    case '1':
+      camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
+		break;
+            
+    case '2':
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
+      cam_look = mercury_group.position;
+		break;
+
+    case '3':
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
+      cam_look = venus_group.position;
+		break;
+            
+    case '4':
+      camera.position.set ( 500000, 500000, 0);
+      sun_group.add( camera );
+      cam_look = earth.position;
+		break;
+
+    case '5':
+      camera.position.set ( jupiter_group.position.x + 1000, 0, jupiter_group.position.z );
+      jupiter_group.add( camera );
+      cam_look = jupiter_group.position;
+		break;
+
+    case '6':
+      camera.position.set ( 0, 50000000, 0);
+      sun_group.add( camera );
+      cam_look = jupiter_group.position;
+		break;
+
+    case '7':
+      camera.position.set ( -1000000, 1000000, -800000);
+      sun_group.add( camera );
+      cam_look = sun_group.position;
+		break;
+            
       default:
         ;
     }   
-    camera.lookAt( scene.position );
     renderer.render( scene, camera );
   },
   false
