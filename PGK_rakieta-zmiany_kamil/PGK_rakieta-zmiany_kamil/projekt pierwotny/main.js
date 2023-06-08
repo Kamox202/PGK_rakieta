@@ -90,39 +90,38 @@ uran.castShadow = true;
 
 //dodanie obiektów do sceny
 const group = new THREE.Group();
-group.add( sun_group );
-group.add( earth_group );
-group.add( mercury_group );
-group.add( venus_group );
-group.add( mars_group );
-group.add( jupiter_group );
-group.add( saturn_group );
-group.add( uran_group );
-group.add( neptun_group );
-
+group.add( sungroup );
+group.add(earth);
+group.add(mercury);
+group.add(venus);
+group.add(marsgroup);
+group.add(jupitergroup);
+group.add(saturngroup);
+group.add(urangroup);
+group.add(neptun);
 scene.add( group );
 
 
 
-function body_movement(name, speed, center_distance, group){
+function body_movement(name, speed, center_distance){
 	
   name.rotation.y += speed;
-  group.position.set( center_distance*Math.cos(name.rotation.y),0,center_distance*Math.sin(name.rotation.y));
+  name.position.set( center_distance*Math.cos(name.rotation.y),0,center_distance*Math.sin(name.rotation.y));
 
 }
 
-function point_all_objects(){
+function p(){
 	
 	for(let j = 0; j < 8; j++)
 	{
-		body_movement(name_tab[j], speed_tab[j], sun_distance_tab[j], group_tab[j]);
+		body_movement(name_tab[j], speed_tab[j], sun_distance_tab[j]);
 	}
 }
 
 // funkcja zapewniająca animaccję układu
 function animate() {
   controls.update();
-  point_all_objects();
+  p();
   
   requestAnimationFrame( animate );
 	renderer.render( scene, camera );
