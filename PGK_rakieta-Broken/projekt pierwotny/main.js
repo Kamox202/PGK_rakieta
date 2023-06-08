@@ -69,6 +69,11 @@ group.add( venus_group );
 group.add( mars_group );
 group.add( jupiter_group );
 group.add( Rocket_group );
+group.add( comet1_group );
+group.add( comet2_group );
+group.add( comet3_group );
+group.add( comet4_group );
+group.add( comet5_group );
 group.add( ambientLight )
 
 
@@ -173,8 +178,8 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
      jupiter_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
  		jupiter_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
-     Rocket_trailMaterial.uniforms.headColor.value.set( 1.0, 0.0, 0.0, 0.75 );
- 		Rocket_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.2, 0.15 );
+     Rocket_trailMaterial.uniforms.headColor.value.set( 1.0, 1.0, 0.0, 0.75 );
+ 		Rocket_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.0, 0.15 );
 
 // activate the trail
 venus_trail.activate();
@@ -195,28 +200,50 @@ scene.add(jupiter_trail);
 Rocket_trail.activate();
 scene.add(Rocket_trail);
 
+var start = true;
+animate();
+var start = false;
+function sstart()
+{
+ // console.log(start);
+  start = !start;
+  if (start == true) animate();
+}
+
+//stoper
+var myfunc = setInterval(function() {
+  
+  }, 1000)
+
 // funkcja zapewniająca animaccję układu
 function animate() {
 
+  if (!start) return;
+  //do{}while(!start);
   controls.update();
-
-  for(let j = 0; j < 5; j++)
+  
+  for(let j = 0; j < 10; j++)
   {
     Gravitation(group_tab[j]);
+  }
+  for(let j = 0; j < 5; j++){
     group_tab[j].rotation.y += group_tab[j].userData.rotation;
   }
 
   rocket_position();
 
   document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
+  document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
   document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_group.userData.velocity.x.toFixed(2);
   document.getElementById("Rocket_velocity_z").innerHTML = "Velocit Z: " + Rocket_group.userData.velocity.z.toFixed(2);
     
-  document.getElementById("Mercury_R").innerHTML = "Mercury_R: " + v_distance(mercury_group, sun).toFixed(2);
-  document.getElementById("Venus_R").innerHTML = "Venus_R: " + v_distance(venus_group, sun).toFixed(2);
-  document.getElementById("Earth_R").innerHTML = "Earth_R: " + v_distance(earth_group, sun).toFixed(2);
-  document.getElementById("Mars_R").innerHTML = "Mars_R: " + v_distance(mars_group, sun).toFixed(2);
-  document.getElementById("Jupiter_R").innerHTML = "Jupiter_R: " + v_distance(jupiter_group, sun).toFixed(2);
+  document.getElementById("Mercury_R").innerHTML = "Mercury_R: " + v_distance(mercury_group, Rocket_group).toFixed(2);
+  document.getElementById("Venus_R").innerHTML = "Venus_R: " + v_distance(venus_group, Rocket_group).toFixed(2);
+  document.getElementById("Earth_R").innerHTML = "Earth_R: " + v_distance(earth_group, Rocket_group).toFixed(2);
+  document.getElementById("Mars_R").innerHTML = "Mars_R: " + v_distance(mars_group, Rocket_group).toFixed(2);
+  document.getElementById("Jupiter_R").innerHTML = "Jupiter_R: " + v_distance(jupiter_group, Rocket_group).toFixed(2);
+
+
 
 
   //camera.lookAt( Rocket_group.position );
@@ -229,8 +256,10 @@ function animate() {
   Rocket_trail.advance();
   
   requestAnimationFrame( animate );
-	renderer.render( scene, camera );
+	 renderer.render( scene, camera );
+   
 }
+
 
 animate();
 
