@@ -268,7 +268,7 @@ class TrailRenderer extends THREE.Object3D {
 		var tempMatrix4 = new THREE.Matrix4();
 
 		return function advance() {
-            
+
 			this.targetObject.updateMatrixWorld();
 			tempMatrix4.copy( this.targetObject.matrixWorld );
 

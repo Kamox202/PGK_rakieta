@@ -1,22 +1,43 @@
-const scene = new THREE.Scene();
+var scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x0AC );
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000000 );
-camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.02, 50000000 );
+camera.position.set ( 0.1, 10000, 0);
 
 
 // camera.lookAt( Rocket.position );
-const renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( new THREE.Color( 0x000000 ) );
 document.getElementsByTagName('body')[0].appendChild( renderer.domElement );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-const loader = new THREE.GLTFLoader();
+import { GLTFLoader } from './js/GLTFLoader.js';
 
-//loader.load('rocket_final.glb', (gltf) => {
-//   scene.add(gltf.scene)
-//})
+var loader = new GLTFLoader();
+
+loader.load("rocket.gltf", function(gltf){
+    Rocket = gltf.scene;
+    Rocket.rotation.z = -3.14/2;	
+    Rocket.rotation.y = -3.14/2;
+
+    Rocket.scale.set(100, 100, 100);
+
+    const axes = new THREE.AxesHelper(200);
+
+    Rocket_group.add( Rocket );
+
+    scene.add(Rocket_group);
+}, undefined, function ( error ) {
+
+	console.error( error );
+
+} );
+
+var ifupdate = 0;
+
+
+
 
 //skybox
 
@@ -139,6 +160,7 @@ trailHeadGeometry.push(
  mars_group.userData.trail = new TrailRenderer( scene, false );
  jupiter_group.userData.trail = new TrailRenderer( scene, false );
  asteroid_group.userData.trail = new TrailRenderer( scene, false );
+ Rocket_group.userData.trail = new TrailRenderer( scene, false );
 
 // create material for the trail renderer
 var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
@@ -147,10 +169,11 @@ var earth_trailMaterial = TrailRenderer.createBaseMaterial();
 var mars_trailMaterial = TrailRenderer.createBaseMaterial();
 var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
 var asteroid_trailMaterial = TrailRenderer.createBaseMaterial();
+var Rocket_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
-var trailLength = 20000;
-
+var trailLength = 10000;
+function trails(){
 // initialize the trail
 mercury_group.userData.trail.initialize( mercury_trailMaterial, trailLength, false, 0, trailHeadGeometry, mercury_group  );
 venus_group.userData.trail.initialize( venus_trailMaterial, trailLength, false, 0, trailHeadGeometry, venus_group  );
@@ -158,6 +181,7 @@ earth_group.userData.trail.initialize( earth_trailMaterial, 1.8*trailLength, fal
 mars_group.userData.trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
 jupiter_group.userData.trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
 asteroid_group.userData.trail.initialize( asteroid_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, asteroid_group  );
+Rocket_group.userData.trail.initialize( Rocket_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, Rocket_group  );
 
 mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
 mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
@@ -177,6 +201,9 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
      asteroid_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
  		asteroid_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
 
+     Rocket_trailMaterial.uniforms.headColor.value.set( 0.45, 0.25, 0.15, 0.75 );
+ 		Rocket_trailMaterial.uniforms.tailColor.value.set( 0.0, 0.0, 0.0, 0.15 );
+
 // activate the trail
 venus_group.userData.trail.activate();
 
@@ -190,21 +217,42 @@ jupiter_group.userData.trail.activate();
 
 asteroid_group.userData.trail.activate();
 
+Rocket_group.userData.trail.activate();
+}
 var cam_look = Rocket_group.position;
 
-mercury_group.frustumCulled = false;
-mercury_group.userData.trail.frustumCulled = false;
 
-function update() {
-    
-  mercury_group.userData.trail.advance();
-  venus_group.userData.trail.advance();
-  earth_group.userData.trail.advance();
-  mars_group.userData.trail.advance();
-  jupiter_group.userData.trail.advance();
-  asteroid_group.userData.trail.advance();
+function update(x) {
+  if(x)
+  {
+    mercury_group.userData.trail.advance();
+    venus_group.userData.trail.advance();
+    earth_group.userData.trail.advance();
+    mars_group.userData.trail.advance();
+    jupiter_group.userData.trail.advance();
+    asteroid_group.userData.trail.advance();
+    Rocket_group.userData.trail.advance();
+  }
 }
 
+function deactivate_trails()
+{
+  mercury_group.userData.trail.deactivate();
+  mercury_group.userData.trail.destroyMesh();
+  venus_group.userData.trail.deactivate();
+  venus_group.userData.trail.destroyMesh();
+  earth_group.userData.trail.deactivate();
+  earth_group.userData.trail.destroyMesh();
+  mars_group.userData.trail.deactivate();
+  mars_group.userData.trail.destroyMesh();
+  jupiter_group.userData.trail.deactivate();
+  jupiter_group.userData.trail.destroyMesh();
+  asteroid_group.userData.trail.deactivate();
+  asteroid_group.userData.trail.destroyMesh();
+  Rocket_group.userData.trail.deactivate();
+  Rocket_group.userData.trail.destroyMesh();
+
+}
 
 // funkcja zapewniająca animaccję układu
 function animate() {
@@ -224,7 +272,8 @@ function animate() {
     }
   }
 
-  rocket_position();
+  if(Rocket){rocket_position()}
+  
 
   document.getElementById("Rocket_throttle").innerHTML = "Throttle: " + Rocket_throttle.toFixed(2);
   document.getElementById("Rocket_velocity_x").innerHTML = "Velocit X: " + Rocket_group.userData.velocity.x.toFixed(2);
@@ -236,17 +285,9 @@ function animate() {
   document.getElementById("Mars_R").innerHTML = "Mars_R: " + v_distance(mars_group, sun).toFixed(2);
   document.getElementById("Jupiter_R").innerHTML = "Jupiter_R: " + v_distance(jupiter_group, sun).toFixed(2);
 
-    
-    
-  jupiter_group.frustrumCulled = true;
 
-  update();
+  update(ifupdate);
   
-    
-    if(jupiter.isFrustumCulled)
-    {
-        console.log("nie jest na scenie");
-    };
 
   camera.lookAt( cam_look );
   
@@ -302,12 +343,6 @@ window.addEventListener(
       Rocket_throttle = 0;
 
 		break;
-
-    case 'c':
-      camera.position.set ( 500000, Rocket.position.y + 500000, 0);
-      sun_group.add( camera );
-      cam_look = sun.position;
-		break;
 		
 	  case 'l':
 			if ( ALight == false ) 
@@ -321,44 +356,22 @@ window.addEventListener(
 			break;
             
     case '1':
-      camera.position.set ( 0.1, Rocket.position.y + 0.1, 0);
+      ifupdate = 0;
+      deactivate_trails();
+      camera.position.set ( 0, 2500, -2500);
+      Rocket_group.add( camera );
+      cam_look = Rocket_group.position; 
 		break;
             
     case '2':
       camera.position.set ( 500000, 500000, 0);
       sun_group.add( camera );
-      cam_look = mercury_group.position;
+      cam_look = sun.position;
+
+      trails();
+      ifupdate = 1;
 		break;
 
-    case '3':
-      camera.position.set ( 500000, 500000, 0);
-      sun_group.add( camera );
-      cam_look = venus_group.position;
-		break;
-            
-    case '4':
-      camera.position.set ( 500000, 500000, 0);
-      sun_group.add( camera );
-      cam_look = earth.position;
-		break;
-
-    case '5':
-      camera.position.set ( jupiter_group.position.x + 1000, 0, jupiter_group.position.z );
-      jupiter_group.add( camera );
-      cam_look = jupiter_group.position;
-		break;
-
-    case '6':
-      camera.position.set ( 0, 50000000, 0);
-      sun_group.add( camera );
-      cam_look = jupiter_group.position;
-		break;
-
-    case '7':
-      camera.position.set ( -1000000, 1000000, -800000);
-      sun_group.add( camera );
-      cam_look = sun_group.position;
-		break;
             
       default:
         ;
