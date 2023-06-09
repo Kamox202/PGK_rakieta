@@ -74,6 +74,11 @@ group.add( comet2_group );
 group.add( comet3_group );
 group.add( comet4_group );
 group.add( comet5_group );
+group.add( comet6_group );
+group.add( comet7_group );
+group.add( comet8_group );
+group.add( comet9_group );
+group.add( comet10_group );
 group.add( ambientLight )
 
 
@@ -83,11 +88,11 @@ scene.add( group );
 
 
 
-function Gravitation(body)
+function Gravitation(body, b_tail, b_tailmat)
 {
 
   var Force_ = Newton_Grav(body, sun);
-  crash_with_body(body, sun);
+  crash_with_body(body, sun, b_tail,b_tailmat);
 
   body.userData.velocity.x += Force_.x;
   body.userData.velocity.z += Force_.z; 
@@ -96,11 +101,11 @@ function Gravitation(body)
   body.position.z += body.userData.velocity.z;
 }
 
-function Gravitation_2(body, atractor)
+function Gravitation_2(body, atractor, b_tail, b_tailmat)
 {
 
   var Force_ = Newton_Grav(body, atractor);
-  //crash_with_body(body, atractor);
+  crash_with_body(body, atractor, b_tail, b_tailmat);
 
   body.userData.velocity.x += Force_.x;
   body.userData.velocity.z += Force_.z; 
@@ -128,6 +133,14 @@ function rocket_position()
   Gravitation_2(Rocket_group, earth_group);
   Gravitation_2(Rocket_group, mars_group);
   Gravitation_2(Rocket_group, jupiter_group);
+
+  Gravitation_2(Rocket_group, comet1_group);
+  Gravitation_2(Rocket_group, comet2_group);
+  Gravitation_2(Rocket_group, comet3_group);
+  Gravitation_2(Rocket_group, comet4_group);
+  Gravitation_2(Rocket_group, comet5_group);
+
+
 }
 
 var trailHeadGeometry = [];
@@ -144,6 +157,18 @@ var earth_trail = new TrailRenderer( scene, false );
 var mars_trail = new TrailRenderer( scene, false );
 var jupiter_trail = new TrailRenderer( scene, false );
 var Rocket_trail = new TrailRenderer( scene, false );
+var comet1_trail = new TrailRenderer( scene, false );
+var comet2_trail = new TrailRenderer( scene, false );
+var comet3_trail = new TrailRenderer( scene, false );
+var comet4_trail = new TrailRenderer( scene, false );
+var comet5_trail = new TrailRenderer( scene, false );
+
+var comet6_trail = new TrailRenderer( scene, false );
+var comet7_trail = new TrailRenderer( scene, false );
+var comet8_trail = new TrailRenderer( scene, false );
+var comet9_trail = new TrailRenderer( scene, false );
+var comet10_trail = new TrailRenderer( scene, false );
+
 // create material for the trail renderer
 var mercury_trailMaterial = TrailRenderer.createBaseMaterial();	
 var venus_trailMaterial = TrailRenderer.createBaseMaterial();	
@@ -151,6 +176,20 @@ var earth_trailMaterial = TrailRenderer.createBaseMaterial();
 var mars_trailMaterial = TrailRenderer.createBaseMaterial();
 var jupiter_trailMaterial = TrailRenderer.createBaseMaterial();
 var Rocket_trailMaterial = TrailRenderer.createBaseMaterial();
+
+var comet1_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet2_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet3_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet4_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet5_trailMaterial = TrailRenderer.createBaseMaterial();
+
+var comet6_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet7_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet8_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet9_trailMaterial = TrailRenderer.createBaseMaterial();
+var comet10_trailMaterial = TrailRenderer.createBaseMaterial();
+
+var comet_trailMaterial = TrailRenderer.createBaseMaterial();
 
 // specify length of trail
 var trailLength = 200;
@@ -162,6 +201,19 @@ earth_trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHea
 mars_trail.initialize( mars_trailMaterial, 3.2*trailLength, false, 0, trailHeadGeometry, mars_group  );
 jupiter_trail.initialize( jupiter_trailMaterial, 2.7*trailLength, false, 0, trailHeadGeometry, jupiter_group  );
 Rocket_trail.initialize( Rocket_trailMaterial, trailLength, false, 0, trailHeadGeometry, Rocket_back  );
+
+
+comet1_trail.initialize( comet1_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet1_group  );
+comet2_trail.initialize( comet2_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet2_group  );
+comet3_trail.initialize( comet3_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet3_group  );
+comet4_trail.initialize( comet4_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet4_group  );
+comet5_trail.initialize( comet5_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet5_group  );
+
+comet6_trail.initialize( comet6_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet6_group  );
+comet7_trail.initialize( comet7_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet7_group  );
+comet8_trail.initialize( comet8_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet8_group  );
+comet9_trail.initialize( comet9_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet9_group  );
+comet10_trail.initialize( comet10_trailMaterial, trailLength, false, 0, trailHeadGeometry, comet10_group  );
 
 mercury_trailMaterial.uniforms.headColor.value.set( 0.0, 0.0, 0.5, 0.75 );
 mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
@@ -181,6 +233,40 @@ mercury_trailMaterial.uniforms.tailColor.value.set( 0.8, 0.5, 0.2, 0.15 );
      Rocket_trailMaterial.uniforms.headColor.value.set( 1.0, 1.0, 0.0, 0.75 );
  		Rocket_trailMaterial.uniforms.tailColor.value.set( 0.2, 0.2, 0.0, 0.15 );
 
+    comet1_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet1_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet2_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet2_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet3_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet3_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet4_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet4_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet5_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet5_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+
+     comet6_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet6_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet7_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet7_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet8_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet8_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet9_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet9_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     comet10_trailMaterial.uniforms.headColor.value.set( Math.random(), Math.random(), Math.random(), 0.75 );
+ 		comet10_trailMaterial.uniforms.tailColor.value.set( Math.random(), Math.random(), Math.random(), Math.random() );
+
+     var comet_trsilmat_group = [comet1_trailMaterial, comet2_trailMaterial, comet3_trailMaterial, comet4_trailMaterial, comet5_trailMaterial, comet6_trailMaterial, comet7_trailMaterial, comet8_trailMaterial, comet9_trailMaterial, comet10_trailMaterial];
+
+     var comet_trsild_group = [comet1_trail, comet2_trail, comet3_trail, comet4_trail, comet5_trail, comet6_trail, comet7_trail, comet8_trail, comet9_trail, comet10_trail];
 // activate the trail
 venus_trail.activate();
 scene.add(venus_trail);
@@ -200,9 +286,17 @@ scene.add(jupiter_trail);
 Rocket_trail.activate();
 scene.add(Rocket_trail);
 
+
+for(let i = 0; i <10; i++)
+{
+  comet_trsild_group[i].activate();
+scene.add(comet_trsild_group[i]);
+}
+
+
 var start = true;
 animate();
-var start = false;
+var start = true;
 function sstart()
 {
  // console.log(start);
@@ -219,16 +313,59 @@ var myfunc = setInterval(function() {
 function animate() {
 
   if (!start) return;
-  //do{}while(!start);
+  
   controls.update();
   
-  for(let j = 0; j < 10; j++)
+  for(let j = 0; j < 15; j++)
   {
+    if(j < 5)
     Gravitation(group_tab[j]);
+    else Gravitation(group_tab[j], comet_trsild_group[j-5], comet_trsilmat_group[j-5]);
   }
   for(let j = 0; j < 5; j++){
     group_tab[j].rotation.y += group_tab[j].userData.rotation;
   }
+
+  for(let j = 5; j < 15; j++)
+  {
+    Out_of_Bounds(group_tab[j],comet_trsild_group[j-5], comet_trsilmat_group[j-5]);
+  }
+
+  for(let j = 0; j < 5; j++)
+  {
+    Gravitation_2(comet1_group ,group_tab[j], comet1_trail, comet1_trailMaterial);
+    Gravitation_2(comet2_group ,group_tab[j], comet2_trail, comet2_trailMaterial);
+    Gravitation_2(comet3_group ,group_tab[j], comet3_trail,comet3_trailMaterial);
+    Gravitation_2(comet4_group ,group_tab[j], comet4_trail, comet4_trailMaterial);
+    Gravitation_2(comet5_group ,group_tab[j], comet5_trail, comet5_trailMaterial);
+
+    Gravitation_2(comet6_group ,group_tab[j], comet6_trail, comet6_trailMaterial);
+    Gravitation_2(comet7_group ,group_tab[j], comet7_trail, comet7_trailMaterial);
+    Gravitation_2(comet8_group ,group_tab[j], comet8_trail,comet8_trailMaterial);
+    Gravitation_2(comet9_group ,group_tab[j], comet9_trail, comet9_trailMaterial);
+    Gravitation_2(comet10_group ,group_tab[j], comet10_trail, comet10_trailMaterial);
+  }
+
+  for(let j = 0; j < 10; j++)
+  {
+    if (j != 0)  Gravitation_2(comet1_group ,comet_group[j], comet1_trail, comet1_trailMaterial);
+    if (j != 1)  Gravitation_2(comet2_group ,comet_group[j], comet2_trail, comet2_trailMaterial);
+    if (j != 2)  Gravitation_2(comet3_group ,comet_group[j], comet3_trail,comet3_trailMaterial);
+    if (j != 3) Gravitation_2(comet4_group ,comet_group[j], comet4_trail, comet4_trailMaterial);
+    if (j != 4) Gravitation_2(comet5_group ,comet_group[j], comet5_trail, comet5_trailMaterial);
+
+    if (j != 5)  Gravitation_2(comet6_group ,comet_group[j], comet6_trail, comet6_trailMaterial);
+    if (j != 6)  Gravitation_2(comet7_group ,comet_group[j], comet7_trail, comet7_trailMaterial);
+    if (j != 7)  Gravitation_2(comet8_group ,comet_group[j], comet8_trail, comet8_trailMaterial);
+    if (j != 8) Gravitation_2(comet9_group ,comet_group[j], comet9_trail, comet9_trailMaterial);
+    if (j != 9) Gravitation_2(comet10_group ,comet_group[j], comet10_trail, comet10_trailMaterial);
+  }
+
+    Gravitation_2(comet1_group ,Rocket_group, comet1_trail, comet1_trailMaterial);
+    Gravitation_2(comet2_group ,Rocket_group, comet2_trail, comet2_trailMaterial);
+    Gravitation_2(comet3_group ,Rocket_group, comet3_trail,comet3_trailMaterial);
+   Gravitation_2(comet4_group ,Rocket_group, comet4_trail, comet4_trailMaterial);
+   Gravitation_2(comet5_group ,Rocket_group, comet5_trail, comet5_trailMaterial);
 
   rocket_position();
 
@@ -254,7 +391,17 @@ function animate() {
   mars_trail.advance();
   jupiter_trail.advance();
   Rocket_trail.advance();
-  
+  comet1_trail.advance();
+  comet2_trail.advance();
+  comet3_trail.advance();
+  comet4_trail.advance();
+  comet5_trail.advance();
+  comet6_trail.advance();
+  comet7_trail.advance();
+  comet8_trail.advance();
+  comet9_trail.advance();
+  comet10_trail.advance();
+
   requestAnimationFrame( animate );
 	 renderer.render( scene, camera );
    
@@ -263,6 +410,7 @@ function animate() {
 
 animate();
 
+var et_act = true;
 
 // obsługa klawiatury
 window.addEventListener(
@@ -306,6 +454,9 @@ window.addEventListener(
     case 'z':
       Rocket_throttle = max_throttle;
       console.log(Rocket_throttle);
+      et_act = true;
+      earth_trail.initialize( earth_trailMaterial, 1.8*trailLength, false, 0, trailHeadGeometry, earth_group  );
+      earth_trail.activate();
 		break;
 
     case 'x':
@@ -313,6 +464,9 @@ window.addEventListener(
       Rocket_group.userData.velocity.x = 0;
       Rocket_group.userData.velocity.z = 0;
       console.log(Rocket_throttle);
+      earth_trail.deactivate();
+     // earth_trail.destroyMesh();
+      et_act = false;
 		break;
 
     case 'c':
