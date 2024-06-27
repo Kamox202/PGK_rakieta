@@ -486,11 +486,11 @@ window.addEventListener(
 			scene.remove( ambientLight );
 			break;
             
-    case '1':
+    case '2':
       camera.position.set ( 0, Rocket_group.position.y + 10, 10);
 		break;
             
-    case '2':
+    case '3':
       camera.position.set ( 5000,  5000, 0);
 		break;
             
